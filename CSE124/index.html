@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS RESCUE — Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#1e2a3a}
+
+:root{
+  --navy:  #1e2a3a;
+  --blue:  #355C7D;
+  --plum:  #725A7A;
+  --rose:  #C56C86;
+  --coral: #FF7582;
+  --bg:    #192030;
+  --surface: rgba(53,92,125,0.12);
+  --surface2: rgba(114,90,122,0.10);
+  --border: rgba(255,117,130,0.18);
+  --border2: rgba(197,108,134,0.22);
+  --text: #f0eaf4;
+  --text2: rgba(240,234,244,0.65);
+  --text3: rgba(240,234,244,0.38);
+  --dur: .65s;
+  --ease: cubic-bezier(.76,0,.24,1);
+}
+
+/* SCANLINES subtle */
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,117,130,.004) 3px,rgba(255,117,130,.004) 4px);pointer-events:none;z-index:8000}
+
+/* DECK */
+#deck{position:fixed;inset:0}
+
+/* SLIDES */
+.slide{position:absolute;inset:0;pointer-events:none;visibility:hidden;background:var(--bg)}
+.slide.active{visibility:visible;pointer-events:all;z-index:10}
+.slide.prev{visibility:visible;z-index:5;pointer-events:none}
+.slide.entering,.slide.leaving{visibility:visible}
+
+/* TRANSITIONS */
+.tr-morph.entering{animation:morphIn var(--dur) var(--ease) both}
+@keyframes morphIn{0%{opacity:0;filter:blur(12px);transform:scale(1.03)}100%{opacity:1;filter:none;transform:scale(1)}}
+.tr-morph.leaving{animation:morphOut calc(var(--dur)*.8) var(--ease) both}
+@keyframes morphOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;filter:blur(8px);transform:scale(.97)}}
+
+.tr-push.entering{animation:pushIn var(--dur) var(--ease) both}
+@keyframes pushIn{0%{opacity:0;transform:translateX(4%)}100%{opacity:1;transform:none}}
+.tr-push.leaving{animation:pushOut calc(var(--dur)*.8) var(--ease) both}
+@keyframes pushOut{0%{opacity:1;transform:none}100%{opacity:0;transform:translateX(-4%)}}
+
+.tr-fade.entering{animation:fadeIn var(--dur) ease both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.tr-fade.leaving{animation:fadeOut calc(var(--dur)*.75) ease both}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+
+.tr-curtain.entering{animation:curtainIn var(--dur) var(--ease) both}
+@keyframes curtainIn{0%{opacity:0;clip-path:inset(0 50% 0 50%)}8%{opacity:1}100%{clip-path:inset(0 0% 0 0%)}}
+.tr-curtain.leaving{animation:curtainOut calc(var(--dur)*.8) var(--ease) both}
+@keyframes curtainOut{0%{clip-path:inset(0 0 0 0);opacity:1}92%{opacity:1}100%{clip-path:inset(0 50% 0 50%);opacity:0}}
+
+/* STAGGER */
+@keyframes fU{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes fL{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+@keyframes fR{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes fS{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.entering .e0{animation:fU .5s .18s both}
+.entering .e1{animation:fU .5s .30s both}
+.entering .e2{animation:fU .5s .42s both}
+.entering .e3{animation:fU .5s .54s both}
+.entering .e4{animation:fU .5s .66s both}
+.entering .e5{animation:fU .5s .78s both}
+.entering .eL{animation:fL .55s .25s both}
+.entering .eR{animation:fR .55s .35s both}
+.entering .eS{animation:fS .5s .28s both}
+
+/* BG */
+.bg{position:absolute;inset:0;background-size:cover;background-position:center}
+.bg-dark{position:absolute;inset:0;background:var(--bg)}
+.ov{position:absolute;inset:0}
+.ov-l{background:linear-gradient(110deg,rgba(25,32,48,.96) 22%,rgba(25,32,48,.72) 55%,rgba(25,32,48,.18) 100%)}
+.ov-b{background:linear-gradient(to top,rgba(25,32,48,.98) 0%,rgba(25,32,48,.55) 40%,rgba(25,32,48,.08) 100%)}
+.ov-d{background:rgba(25,32,48,.80)}
+.sc{position:relative;z-index:3;width:100%;height:100%}
+
+/* NAV */
+#nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:20px 5vw}
+.logo{font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--coral)}
+#ninfo{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.15em;color:var(--text3)}
+
+/* DOTS */
+#dots{position:fixed;right:2vw;top:50%;transform:translateY(-50%);z-index:500;display:flex;flex-direction:column;gap:6px}
+.dot{width:4px;height:4px;border-radius:2px;background:rgba(255,255,255,.14);cursor:pointer;transition:height .4s var(--ease),background .35s}
+.dot.on{height:18px;background:var(--coral)}
+
+/* BOTTOM */
+#bot{position:fixed;bottom:0;left:0;right:0;z-index:500;display:flex;align-items:flex-end;justify-content:space-between;padding:0 5vw 22px}
+.ptrack{width:90px;height:1px;background:rgba(255,255,255,.08);border-radius:1px;overflow:hidden}
+.pfill{height:100%;background:var(--coral);border-radius:1px;transition:width .8s var(--ease)}
+.btns{display:flex;gap:8px}
+.btn{width:34px;height:34px;border-radius:50%;border:1px solid rgba(197,108,134,.28);background:rgba(197,108,134,.05);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:background .2s,border-color .2s,transform .15s;backdrop-filter:blur(8px)}
+.btn:hover{background:rgba(197,108,134,.18);border-color:var(--rose);transform:scale(1.08)}
+
+/* DIVIDER */
+.div-h{width:40px;height:2px;background:linear-gradient(90deg,var(--coral),transparent);border-radius:1px;margin-bottom:14px}
+.div-hc{width:40px;height:2px;background:linear-gradient(90deg,var(--coral),transparent);border-radius:1px;margin:14px auto}
+
+/* LABEL / EYEBROW */
+.eyebrow{font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--coral);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:'';width:16px;height:1.5px;background:var(--coral);flex-shrink:0}
+
+/* TYPOGRAPHY */
+.T1{font-family:'Playfair Display',serif;font-size:clamp(3.8rem,8.5vw,9rem);line-height:.9;color:var(--text);font-weight:900;letter-spacing:-.01em}
+.T1 .hi{color:var(--coral)}
+.T2{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,5vw,5.5rem);line-height:.94;color:var(--text);font-weight:700}
+.T2 .hi{color:var(--coral)}
+.T2 .hi2{color:var(--rose)}
+.Tbody{font-family:'DM Sans',sans-serif;font-size:1rem;line-height:1.75;color:var(--text2);font-weight:400}
+.Tstat{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,4vw,4rem);color:var(--coral);line-height:1;font-weight:700}
+.Tstatl{font-family:'DM Sans',sans-serif;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-top:4px;font-weight:500}
+
+/* LAYOUTS */
+.vcl{display:flex;flex-direction:column;justify-content:center;width:100%;height:100%;padding:72px 5vw 0}
+.botl{display:flex;flex-direction:column;justify-content:flex-end;width:100%;height:100%;padding:0 5vw 9vh}
+.ctr{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:72px 5vw 0;text-align:center}
+.spl{display:grid;grid-template-columns:1fr 1fr;width:100%;height:100%;padding-top:72px}
+.spl-l{display:flex;flex-direction:column;justify-content:center;padding:0 4vw}
+.spl-r{display:flex;flex-direction:column;justify-content:center;padding:0 4vw}
+.srow{display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-top:20px}
+
+/* SUBTLE BG PATTERN */
+.dotbg{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(197,108,134,.08) 1px,transparent 1px);background-size:30px 30px;opacity:.6}
+.dotbg-dim{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(114,90,122,.06) 1px,transparent 1px);background-size:26px 26px}
+
+/* SLIDE SECTION TAG */
+.ttag{position:absolute;top:72px;left:5vw;z-index:5;font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);display:flex;align-items:center;gap:8px}
+.ttag::before{content:'';width:12px;height:1px;background:var(--rose)}
+
+/* CARDS */
+.card{background:rgba(53,92,125,.1);border:1px solid rgba(197,108,134,.14);border-radius:10px;padding:18px 20px;transition:background .3s,border-color .3s,transform .25s}
+.card:hover{background:rgba(197,108,134,.1);border-color:rgba(197,108,134,.32);transform:translateY(-2px)}
+.card-icon{font-size:1.4rem;margin-bottom:10px}
+.card-t{font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:6px}
+.card-d{font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--text2);line-height:1.6}
+
+/* MEMBER CARD */
+.mcard{display:flex;flex-direction:column;align-items:center;text-align:center;padding:24px 16px 20px;border-radius:14px;background:rgba(53,92,125,.1);border:1px solid rgba(197,108,134,.14);transition:background .3s,border-color .3s,transform .3s}
+.mcard:hover{background:rgba(197,108,134,.1);border-color:rgba(255,117,130,.3);transform:translateY(-4px)}
+.mcard.featured{background:rgba(197,108,134,.12);border-color:rgba(255,117,130,.35)}
+.mav{width:110px;height:110px;border-radius:50%;border:3px solid rgba(197,108,134,.35);overflow:hidden;background:rgba(114,90,122,.2);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:2.5rem;flex-shrink:0}
+.mav img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;border-radius:50%}
+.mav img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.mn{font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:4px}
+.mt{font-family:'DM Sans',sans-serif;font-size:.72rem;color:var(--text2);line-height:1.4}
+.mrole{font-family:'DM Mono',monospace;font-size:.52rem;color:var(--coral);margin-top:8px;letter-spacing:.08em;text-transform:uppercase}
+
+/* FEATURE GRID */
+.feat4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:980px;margin-top:20px}
+
+/* ARCH NODE */
+.arch-node{position:absolute;background:rgba(53,92,125,.18);border:1px solid rgba(197,108,134,.25);border-radius:8px;padding:8px 14px;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--text2);white-space:nowrap;cursor:default;transition:background .3s,border-color .3s}
+.arch-node:hover{background:rgba(197,108,134,.14);border-color:rgba(255,117,130,.4)}
+.arch-node.core{background:rgba(114,90,122,.22);border-color:rgba(255,117,130,.4);color:var(--text);font-weight:500}
+.arch-node .sub{font-size:.5rem;color:var(--text3);display:block;margin-top:1px}
+
+/* DATA FLOW TREE */
+.tree-node{position:absolute;border:1px solid rgba(197,108,134,.22);border-radius:6px;padding:6px 11px;font-family:'DM Mono',monospace;font-size:.55rem;color:var(--text2);background:rgba(53,92,125,.1);white-space:nowrap}
+.tree-node.root{border-color:rgba(255,117,130,.45);background:rgba(114,90,122,.18);color:var(--text);font-size:.62rem;font-weight:500}
+
+/* MAC CODE CARD */
+.mac-card{background:#1a1a2e;border:1px solid rgba(197,108,134,.18);border-radius:12px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.45)}
+.mac-bar{height:36px;background:#252540;display:flex;align-items:center;padding:0 14px;gap:7px;flex-shrink:0;border-bottom:1px solid rgba(197,108,134,.1)}
+.mac-dot{width:12px;height:12px;border-radius:50%}
+.mac-title{font-family:'DM Mono',monospace;font-size:.58rem;color:rgba(240,234,244,.3);margin-left:8px;letter-spacing:.05em}
+.mac-body{padding:18px 20px;font-family:'DM Mono',monospace;font-size:.68rem;line-height:1.75;color:#b8c8d8;overflow:hidden;position:relative;min-height:280px}
+.mac-body .c-kw{color:#c56c86}
+.mac-body .c-fn{color:#ff7582}
+.mac-body .c-num{color:#f4b96e}
+.mac-body .c-cm{color:rgba(184,200,216,.35);font-style:italic}
+.mac-body .c-str{color:#a8d8a8}
+.mac-body .cursor{display:inline-block;width:6px;height:.85em;background:var(--coral);vertical-align:middle;animation:blink .9s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* GLASS BOX */
+.gbox{background:rgba(53,92,125,.1);border:1px solid rgba(197,108,134,.14);border-radius:12px;padding:20px 22px}
+.gbox-t{font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:6px}
+.gbox-d{font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--text2);line-height:1.6}
+
+/* PRIORITY BADGE */
+.pbadge{font-family:'DM Mono',monospace;font-size:.56rem;padding:4px 10px;border-radius:4px;letter-spacing:.08em;font-weight:500}
+.pb-em{background:rgba(255,117,130,.12);border:1px solid rgba(255,117,130,.35);color:#FF7582}
+.pb-hi{background:rgba(197,108,134,.12);border:1px solid rgba(197,108,134,.35);color:#C56C86}
+.pb-md{background:rgba(114,90,122,.12);border:1px solid rgba(114,90,122,.35);color:#a07aaa}
+.pb-lo{background:rgba(53,92,125,.12);border:1px solid rgba(53,92,125,.4);color:#7ba0c0}
+
+/* BULLET / FEATURE PILL */
+.fpill{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:8px;border:1px solid rgba(197,108,134,.1);background:rgba(53,92,125,.08);margin-bottom:8px;transition:background .25s}
+.fpill:hover{background:rgba(197,108,134,.08)}
+.fpill-dot{width:6px;height:6px;border-radius:50%;background:var(--coral);flex-shrink:0;margin-top:5px}
+.fpill-t{font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--text);font-weight:500}
+
+/* LIMITATIONS */
+.lstep{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:14px 0;border-bottom:1px solid rgba(197,108,134,.08);align-items:start}
+.lstep:last-child{border:none}
+.lstep-icon{width:36px;height:36px;border-radius:8px;background:rgba(255,117,130,.1);border:1px solid rgba(255,117,130,.2);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.lstep-t{font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:3px}
+.lstep-d{font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--text2);line-height:1.55}
+
+/* FUTURE CARD */
+.fcrd{padding:18px;border-radius:10px;background:rgba(53,92,125,.1);border:1px solid rgba(197,108,134,.14);position:relative;overflow:hidden;transition:transform .25s,border-color .25s}
+.fcrd::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--coral),transparent)}
+.fcrd:hover{transform:translateY(-2px);border-color:rgba(255,117,130,.28)}
+.fcrd-icon{font-size:1.3rem;margin-bottom:10px}
+.fcrd-t{font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:5px}
+.fcrd-d{font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--text2);line-height:1.55}
+
+/* DIVIDER LINE */
+.sep{width:1px;height:44px;background:rgba(197,108,134,.2)}
+
+/* DEMO */
+.demo-wrap{position:relative;flex:1;overflow:hidden;border:1px solid rgba(197,108,134,.2);border-radius:10px;background:#141824}
+.demo-bar{height:30px;background:#1d2235;border-bottom:1px solid rgba(197,108,134,.1);display:flex;align-items:center;padding:0 12px;gap:7px;flex-shrink:0}
+.demo-dot{width:10px;height:10px;border-radius:50%}
+.demo-url{font-family:'DM Mono',monospace;font-size:.55rem;color:rgba(240,234,244,.3);margin-left:8px}
+.demo-frame{width:100%;height:100%;border:none;display:block}
+
+/* STAT DIVIDER */
+.stat-sep{width:1px;height:40px;background:rgba(197,108,134,.18);align-self:center}
+
+/* SLIDE BG gradient */
+.bg-grad{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 30%,rgba(114,90,122,.18) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(53,92,125,.14) 0%,transparent 55%)}
+
+/* INFO BOX for arch */
+.info-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.info-chip{font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;padding:5px 12px;border-radius:20px;background:rgba(53,92,125,.15);border:1px solid rgba(197,108,134,.18);color:var(--text2)}
+
+/* Visual bullet list */
+.vlist{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.vlist li{display:flex;align-items:flex-start;gap:10px;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--text2);line-height:1.55}
+.vlist li::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--coral);flex-shrink:0;margin-top:5px}
+.vlist li strong{color:var(--text);font-weight:600}
+
+/* Numbered step */
+.nstep{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid rgba(197,108,134,.07)}
+.nstep:last-child{border:none}
+.nstep-n{font-family:'Playfair Display',serif;font-size:2rem;color:rgba(255,117,130,.2);min-width:32px;line-height:1;font-weight:700}
+.nstep-t{font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:3px}
+.nstep-d{font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--text2);line-height:1.5}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="logo">Nexus Rescue</div>
+  <span id="ninfo">01 / 12</span>
+</nav>
+
+<div id="dots"></div>
+
+<div id="bot">
+  <div class="ptrack"><div class="pfill" id="PF" style="width:8.33%"></div></div>
+  <div class="btns">
+    <button class="btn" id="BP">&#8592;</button>
+    <button class="btn" id="BN">&#8594;</button>
+    <button class="btn" id="FSbtn" title="Fullscreen (F)">
+      <svg id="FSico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline>
+        <line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<div id="deck">
+
+<!-- ══ SLIDE 1: HERO ══ -->
+<div class="slide active tr-morph" data-idx="0">
+  <div class="bg" style="background-image:url('bg1.jpg')"></div>
+  <div class="ov ov-l"></div>
+  <div class="ov" style="background:linear-gradient(to bottom,rgba(25,32,48,.3) 0%,transparent 35%,rgba(25,32,48,.75) 100%)"></div>
+  <div class="bg-grad"></div>
+  <div class="sc">
+    <div class="vcl">
+      <div class="eyebrow e0">Disaster Route Optimizer</div>
+      <div class="T1 e1" style="max-width:800px">
+        <div>NEXUS</div>
+        <div class="hi">RESCUE</div>
+      </div>
+      <div class="div-h e2" style="margin-top:22px"></div>
+      <p class="Tbody e3" style="max-width:480px;margin-top:10px;font-size:.95rem">A real-time web application for managing disasters, deploying rescue teams, and computing optimal routes using advanced data structures.</p>
+      <div class="e4" style="margin-top:28px">
+        <div style="font-family:'Playfair Display',serif;font-size:clamp(1.2rem,2.2vw,2rem);color:var(--coral);font-style:italic;font-weight:400;letter-spacing:.01em">"Save Time, Save Lives."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 2: TEAM ══ -->
+<div class="slide tr-push" data-idx="1">
+  <div class="bg-dark"></div>
+  <div class="dotbg"></div>
+  <div class="bg-grad"></div>
+  <div class="sc">
+    <div class="ctr">
+      <div class="eyebrow e0" style="justify-content:center">CSE124 — Data Structure Lab</div>
+      <div class="T2 e1">Meet the <span class="hi">Team</span></div>
+      <div class="div-hc e2"></div>
+      <div class="e3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:820px;margin-top:20px;width:100%">
+        <div class="mcard">
+          <div class="mav"><img src="mem1.jpg" alt="Member 1" onerror="this.parentElement.innerHTML='👤'"></div>
+          <div class="mn">Layba Zareen Zarrah</div>
+          <div class="mt">ID: 252-15-058</div>
+          <div class="mrole">Presenter 1</div>
+        </div>
+        <div class="mcard featured">
+          <div class="mav" style="border-color:var(--coral)"><img src="mem2.jpg" alt="Member 2" onerror="this.parentElement.innerHTML='👤'"></div>
+          <div class="mn" style="color:var(--coral)">S. M. Sayem Hossain</div>
+          <div class="mt">ID: 252-15-104</div>
+          <div class="mrole">Presenter 2</div>
+        </div>
+        <div class="mcard">
+          <div class="mav"><img src="mem3.jpg" alt="Member 3" onerror="this.parentElement.innerHTML='👤'"></div>
+          <div class="mn">Muslima Binte Mohsin</div>
+          <div class="mt">ID: 252-15-103</div>
+          <div class="mrole">Presenter 3</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 3: WHAT IS THE PROJECT ══ -->
+<div class="slide tr-fade" data-idx="2">
+  <div class="bg-dark"></div>
+  <div class="dotbg-dim"></div>
+  <div class="bg-grad"></div>
+  <div class="ttag">Member 1 · Slide 1.1</div>
+  <div class="sc">
+    <div class="spl">
+      <div class="spl-l">
+        <div class="eyebrow eL">What is our project?</div>
+        <div class="T2 eL" style="max-width:420px">Disaster <span class="hi">Route</span> Optimizer</div>
+        <div class="div-h eL" style="margin-top:16px"></div>
+        <p class="Tbody eL" style="max-width:420px;margin-top:12px;font-size:.9rem">During emergencies like earthquakes, fires, or floods, saving time means saving lives. Our web application helps administrators manage disasters and send rescue teams quickly — built to apply real-world Data Structure concepts.</p>
+        <div class="eL" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+          <span class="pbadge pb-em">Real-Time</span>
+          <span class="pbadge pb-hi">Firebase</span>
+          <span class="pbadge pb-md">AI Integrated</span>
+          <span class="pbadge pb-lo">Graph Routing</span>
+        </div>
+      </div>
+      <div class="spl-r eR">
+        <!-- Visual: Key Problem Points -->
+        <div style="display:flex;flex-direction:column;gap:12px;max-width:360px">
+          <div class="gbox">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="font-size:1.3rem">🌊</span>
+              <div class="gbox-t">The Problem</div>
+            </div>
+            <div class="gbox-d">In disaster scenarios, rescue coordination is slow. Teams get stuck on blocked roads, priorities are unclear, and response time is critical.</div>
+          </div>
+          <div class="gbox">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="font-size:1.3rem">⚡</span>
+              <div class="gbox-t">Our Solution</div>
+            </div>
+            <div class="gbox-d">A live map dashboard where admins place disasters and teams, block roads, and let the system find the fastest safe route — instantly.</div>
+          </div>
+          <div class="gbox">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="font-size:1.3rem">🎓</span>
+              <div class="gbox-t">Academic Goal</div>
+            </div>
+            <div class="gbox-d">Demonstrate Stack, Priority Queue, Graph, Dijkstra's Algorithm, and Tree in a working real-world system.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 4: KEY FEATURES ══ -->
+<div class="slide tr-push" data-idx="3">
+  <div class="bg-dark"></div>
+  <div class="dotbg-dim"></div>
+  <div class="bg-grad"></div>
+  <div class="ttag">Member 1 · Slide 1.2</div>
+  <div class="sc">
+    <div class="vcl">
+      <div class="eyebrow e0">Key Features</div>
+      <div class="T2 e1">Core <span class="hi">Features</span></div>
+      <div class="div-h e2" style="margin-top:14px"></div>
+      <div class="feat4 e3">
+        <div class="card">
+          <div class="card-icon">🗺️</div>
+          <div class="card-t">Live Map</div>
+          <div class="card-d">Interactive real-time map with disaster and rescue team markers updated live via Firebase.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🚒</div>
+          <div class="card-t">Team Deploy</div>
+          <div class="card-d">Place rescue teams and disaster zones directly on the map interface with one click.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🚧</div>
+          <div class="card-t">Road Block</div>
+          <div class="card-d">Draw blocked roads — system instantly recalculates the safest alternate route.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🤖</div>
+          <div class="card-t">AI Agent</div>
+          <div class="card-d">Smart chatbot assists admins with real-time advice and situation analysis.</div>
+        </div>
+      </div>
+      <!-- Extra detail row -->
+      <div class="e4" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;max-width:980px;margin-top:12px">
+        <div class="fpill"><div class="fpill-dot"></div><div class="fpill-t">Firebase Realtime Database sync</div></div>
+        <div class="fpill"><div class="fpill-dot"></div><div class="fpill-t">Priority-based disaster queue</div></div>
+        <div class="fpill"><div class="fpill-dot"></div><div class="fpill-t">Dijkstra shortest path routing</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 5: ARCHITECTURE ══ -->
+<div class="slide tr-curtain" data-idx="4">
+  <div class="bg-dark"></div>
+  <div class="dotbg"></div>
+  <div class="ttag">Member 2 · Slide 2.1</div>
+  <div class="sc">
+    <div style="display:flex;flex-direction:column;justify-content:center;height:100%;padding:72px 5vw 40px">
+      <div class="eyebrow e0">System Architecture</div>
+      <div class="T2 e1">System <span class="hi">Architecture</span></div>
+      <div class="div-h e2" style="margin-top:12px;margin-bottom:14px"></div>
+      <!-- Architecture visual: layered columns -->
+      <div class="e3" style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:center;max-width:900px">
+        <!-- Column 1: Client -->
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Client</div>
+          <div class="arch-node core" style="position:relative">Browser (HTML/CSS/JS)<span class="sub">React-like UI</span></div>
+          <div class="arch-node" style="position:relative">Leaflet Map<span class="sub">Interactive tiles</span></div>
+          <div class="arch-node" style="position:relative">AI Agent<span class="sub">Chat interface</span></div>
+        </div>
+        <!-- Arrow -->
+        <div style="display:flex;align-items:center;justify-content:center;padding:0 16px">
+          <svg width="40" height="24" viewBox="0 0 40 24"><line x1="0" y1="12" x2="32" y2="12" stroke="rgba(197,108,134,0.4)" stroke-width="1.5" stroke-dasharray="4,3"/><polyline points="26,6 32,12 26,18" fill="none" stroke="rgba(197,108,134,0.4)" stroke-width="1.5"/></svg>
+        </div>
+        <!-- Column 2: Firebase -->
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Backend (Firebase)</div>
+          <div class="arch-node core" style="position:relative">Realtime Database<span class="sub">JSON tree sync</span></div>
+          <div class="arch-node" style="position:relative">Authentication<span class="sub">Admin login</span></div>
+          <div class="arch-node" style="position:relative">Storage<span class="sub">Cloudflare backup</span></div>
+        </div>
+        <!-- Arrow -->
+        <div style="display:flex;align-items:center;justify-content:center;padding:0 16px">
+          <svg width="40" height="24" viewBox="0 0 40 24"><line x1="0" y1="12" x2="32" y2="12" stroke="rgba(197,108,134,0.4)" stroke-width="1.5" stroke-dasharray="4,3"/><polyline points="26,6 32,12 26,18" fill="none" stroke="rgba(197,108,134,0.4)" stroke-width="1.5"/></svg>
+        </div>
+        <!-- Column 3: External APIs -->
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">External APIs</div>
+          <div class="arch-node" style="position:relative">OSRM API<span class="sub">Routing engine</span></div>
+          <div class="arch-node" style="position:relative">Claude AI<span class="sub">Anthropic LLM</span></div>
+        </div>
+      </div>
+      <!-- Chips row -->
+      <div class="info-row e4">
+        <span class="info-chip">🔄 Real-Time Sync</span>
+        <span class="info-chip">🔐 Auth Protected</span>
+        <span class="info-chip">🗺️ Map Routing</span>
+        <span class="info-chip">🤖 AI Assisted</span>
+        <span class="info-chip">☁️ Cloud Backup</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 6: LIVE DEMO ══ -->
+<div class="slide tr-fade" data-idx="5">
+  <div class="bg-dark"></div>
+  <div class="ttag">Member 2 · Slide 2.2</div>
+  <div class="sc" style="display:flex;flex-direction:column;height:100%;padding:72px 5vw 40px;gap:14px">
+    <div>
+      <div class="eyebrow e0">Live Demonstration</div>
+      <div class="T2 e1">Live <span class="hi">Demo</span></div>
+    </div>
+    <div class="demo-wrap e2" style="flex:1;display:flex;flex-direction:column">
+      <div class="demo-bar">
+        <div class="demo-dot" style="background:#ff5f57"></div>
+        <div class="demo-dot" style="background:#febc2e"></div>
+        <div class="demo-dot" style="background:#28c840"></div>
+        <span class="demo-url">sm-sayem-hossain.github.io/nexus-rescue/</span>
+      </div>
+      <iframe class="demo-frame" src="https://sm-sayem-hossain.github.io/nexus-rescue/" title="NEXUS RESCUE Live Demo" loading="lazy" style="flex:1;border:none"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 7: STACK & PRIORITY QUEUE ══ -->
+<div class="slide tr-push" data-idx="6">
+  <div class="bg-dark"></div>
+  <div class="dotbg-dim"></div>
+  <div class="bg-grad"></div>
+  <div class="ttag">Member 2 · Slide 2.3</div>
+  <div class="sc">
+    <div class="spl">
+      <div class="spl-l">
+        <div class="eyebrow eL">Disaster Management</div>
+        <div class="T2 eL" style="margin-bottom:14px">Stack &amp; <span class="hi">Priority</span> Queue</div>
+        <div class="div-h eL"></div>
+        <p class="Tbody eL" style="margin-top:12px;max-width:400px;font-size:.88rem">Multiple disasters are managed simultaneously using two data structures. Emergency cases use a <strong style="color:var(--coral)">Stack (LIFO)</strong> for instant critical response, while all other cases are sorted by a <strong style="color:var(--rose)">Priority Queue (Min-Heap)</strong>.</p>
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:6px" class="eL">
+          <div style="display:flex;align-items:center;gap:8px"><span class="pbadge pb-em">EMERGENCY</span><span style="font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--text2)">→ Stack (LIFO) — immediate</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><span class="pbadge pb-hi">HIGH</span><span style="font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--text2)">→ Priority Queue — top</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><span class="pbadge pb-md">MEDIUM</span><span style="font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--text2)">→ Priority Queue — mid</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><span class="pbadge pb-lo">LOW</span><span style="font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--text2)">→ Priority Queue — base</span></div>
+        </div>
+      </div>
+      <div class="spl-r eR">
+        <div class="mac-card">
+          <div class="mac-bar">
+            <div class="mac-dot" style="background:#ff5f57"></div>
+            <div class="mac-dot" style="background:#febc2e"></div>
+            <div class="mac-dot" style="background:#28c840"></div>
+            <span class="mac-title">disaster_manager.c</span>
+          </div>
+          <div class="mac-body">
+<pre id="codeOut1"></pre><span class="cursor"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 8: GRAPH & DIJKSTRA ══ -->
+<div class="slide tr-push" data-idx="7">
+  <div class="bg-dark"></div>
+  <div class="dotbg-dim"></div>
+  <div class="bg-grad"></div>
+  <div class="ttag">Member 2 · Slide 2.4</div>
+  <div class="sc">
+    <div class="spl">
+      <div class="spl-l eL">
+        <div class="mac-card">
+          <div class="mac-bar">
+            <div class="mac-dot" style="background:#ff5f57"></div>
+            <div class="mac-dot" style="background:#febc2e"></div>
+            <div class="mac-dot" style="background:#28c840"></div>
+            <span class="mac-title">route_optimizer.c</span>
+          </div>
+          <div class="mac-body">
+<pre id="codeOut2"></pre><span class="cursor"></span>
+          </div>
+        </div>
+      </div>
+      <div class="spl-r">
+        <div class="eyebrow eR">Routing Algorithm</div>
+        <div class="T2 eR" style="margin-bottom:14px">Graph &amp; <span class="hi">Dijkstra</span></div>
+        <div class="div-h eR"></div>
+        <p class="Tbody eR" style="margin-top:12px;max-width:400px;font-size:.88rem">The entire map is modeled as a <strong style="color:var(--coral)">Weighted Graph</strong>. Road intersections are nodes, roads are edges. Dijkstra's Algorithm computes the shortest rescue path instantly.</p>
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:6px" class="eR">
+          <div class="fpill"><div class="fpill-dot"></div><div class="fpill-t">Nodes represent road intersections on the map</div></div>
+          <div class="fpill"><div class="fpill-dot"></div><div class="fpill-t">Edges represent roads with distance weights</div></div>
+          <div class="fpill"><div class="fpill-dot" style="background:var(--coral)"></div><div class="fpill-t">Road Block removes the edge from the graph</div></div>
+          <div class="fpill"><div class="fpill-dot" style="background:#7bc87b"></div><div class="fpill-t">New shortest path is recalculated instantly</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 9: DATABASE TREE ══ -->
+<div class="slide tr-curtain" data-idx="8">
+  <div class="bg-dark"></div>
+  <div class="dotbg"></div>
+  <div class="ttag">Member 2 · Slide 2.5</div>
+  <div class="sc">
+    <div style="display:flex;flex-direction:column;justify-content:center;height:100%;padding:72px 5vw 40px">
+      <div class="eyebrow e0">Firebase Database</div>
+      <div class="T2 e1">JSON <span class="hi">Tree</span> Structure</div>
+      <div class="div-h e2" style="margin-top:12px;margin-bottom:8px"></div>
+      <p class="Tbody e3" style="max-width:580px;margin-bottom:16px;font-size:.88rem">Firebase Realtime Database stores all data as a hierarchical <strong style="color:var(--coral)">JSON Tree</strong> — not SQL tables. Tree traversal makes read/write operations extremely fast.</p>
+      <!-- Animated Tree -->
+      <div class="e4" style="position:relative;flex:1;min-height:220px;max-height:300px">
+        <canvas id="treeCanvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+        <div class="tree-node root" id="tn-root" style="left:46%;top:4%;transform:translateX(-50%)">NEXUS_DB (root)</div>
+        <div class="tree-node" id="tn-disasters" style="left:10%;top:34%">disasters/</div>
+        <div class="tree-node" id="tn-teams" style="left:36%;top:34%">teams/</div>
+        <div class="tree-node" id="tn-blocks" style="left:60%;top:34%">blocks/</div>
+        <div class="tree-node" id="tn-admins" style="left:81%;top:34%">admins/</div>
+        <div class="tree-node" id="tn-d1" style="left:2%;top:62%">id: d_001</div>
+        <div class="tree-node" id="tn-d2" style="left:18%;top:62%">priority: HIGH</div>
+        <div class="tree-node" id="tn-t1" style="left:33%;top:62%">id: t_001</div>
+        <div class="tree-node" id="tn-t2" style="left:48%;top:62%">lat/lng</div>
+        <div class="tree-node" id="tn-b1" style="left:62%;top:62%">polyline[]</div>
+        <div class="tree-node" id="tn-a1" style="left:78%;top:62%">uid: xyz</div>
+        <div class="tree-node" id="tn-d3" style="left:4%;top:86%">lat: 23.8</div>
+        <div class="tree-node" id="tn-d4" style="left:20%;top:86%">lng: 90.4</div>
+        <div class="tree-node" id="tn-t3" style="left:37%;top:86%">status: active</div>
+        <div class="tree-node" id="tn-a2" style="left:77%;top:86%">role: admin</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 10: LIMITATIONS ══ -->
+<div class="slide tr-fade" data-idx="9">
+  <div class="bg-dark"></div>
+  <div class="dotbg-dim"></div>
+  <div class="bg-grad"></div>
+  <div class="ttag">Member 3 · Slide 3.1</div>
+  <div class="sc">
+    <div class="spl">
+      <div class="spl-l">
+        <div class="eyebrow eL">Challenges</div>
+        <div class="T2 eL">Current <span class="hi">Limitations</span></div>
+        <div class="div-h eL" style="margin-top:14px"></div>
+        <div style="max-width:420px;margin-top:18px" class="eL">
+          <div class="lstep">
+            <div class="lstep-icon">⏱️</div>
+            <div><div class="lstep-t">API Latency</div><div class="lstep-d">The free OSRM routing API sometimes takes a few seconds to return path data, causing minor delays in route display.</div></div>
+          </div>
+          <div class="lstep">
+            <div class="lstep-icon">📱</div>
+            <div><div class="lstep-t">No Mobile App</div><div class="lstep-d">Currently web-only. Field rescue teams need a dedicated mobile interface for on-ground use.</div></div>
+          </div>
+          <div class="lstep">
+            <div class="lstep-icon">📍</div>
+            <div><div class="lstep-t">No GPS Tracking</div><div class="lstep-d">Rescue team positions are manually placed — live GPS movement tracking is not yet integrated.</div></div>
+          </div>
+          <div class="lstep">
+            <div class="lstep-icon">👥</div>
+            <div><div class="lstep-t">Single Admin Role</div><div class="lstep-d">Currently only one admin can manage the system. Multi-user role management for coordinated response teams is not supported.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="spl-r eR">
+        <!-- Visual summary -->
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:360px">
+          <div class="gbox">
+            <div class="gbox-t" style="color:var(--coral);margin-bottom:8px">⚠️ Impact Summary</div>
+            <ul class="vlist">
+              <li><strong>Performance</strong> — API delays in critical moments</li>
+              <li><strong>Accessibility</strong> — no field-friendly mobile interface</li>
+              <li><strong>Tracking</strong> — team locations are not live</li>
+              <li><strong>Coordination</strong> — no multi-admin support</li>
+            </ul>
+          </div>
+          <div class="gbox" style="background:rgba(255,117,130,.06);border-color:rgba(255,117,130,.2)">
+            <div class="gbox-t">Scope of This Version</div>
+            <div class="gbox-d">This is a prototype built for academic purposes to demonstrate data structure concepts. Production deployment would require addressing all limitations.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 11: FUTURE SCOPE ══ -->
+<div class="slide tr-push" data-idx="10">
+  <div class="bg-dark"></div>
+  <div class="dotbg-dim"></div>
+  <div class="bg-grad"></div>
+  <div class="ttag">Member 3 · Slide 3.2</div>
+  <div class="sc">
+    <div class="vcl">
+      <div class="eyebrow e0">Roadmap</div>
+      <div class="T2 e1">Future <span class="hi">Scope</span></div>
+      <div class="div-h e2" style="margin-top:14px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:860px;margin-top:18px" class="e3">
+        <div class="fcrd">
+          <div class="fcrd-icon">📱</div>
+          <div class="fcrd-t">Mobile Application</div>
+          <div class="fcrd-d">Native mobile app for field rescue teams — allowing on-ground access to routes and disaster data in real time.</div>
+        </div>
+        <div class="fcrd">
+          <div class="fcrd-icon">👥</div>
+          <div class="fcrd-t">Multi-Admin Support</div>
+          <div class="fcrd-d">Role-based access for multiple coordinators — allowing different teams to manage specific disaster zones simultaneously.</div>
+        </div>
+        <div class="fcrd">
+          <div class="fcrd-icon">🛰️</div>
+          <div class="fcrd-t">Real GPS Tracking</div>
+          <div class="fcrd-d">Live location tracking of all rescue vehicles on the map using real GPS feeds and WebSocket streams.</div>
+        </div>
+        <div class="fcrd">
+          <div class="fcrd-icon">🤖</div>
+          <div class="fcrd-t">AI Auto-Dispatch</div>
+          <div class="fcrd-d">AI automatically assigns the nearest available team to new disasters without requiring admin input.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 12: THANK YOU ══ -->
+<div class="slide tr-morph" data-idx="11">
+  <div class="bg-dark"></div>
+  <div class="dotbg"></div>
+  <div class="bg-grad"></div>
+  <div class="sc">
+    <div class="ctr">
+      <div class="eyebrow e0" style="justify-content:center">CSE124 — Data Structure Lab</div>
+      <div class="T1 e1" style="font-size:clamp(3.5rem,8vw,8rem)">
+        <div>Thank <span class="hi">You</span></div>
+      </div>
+      <div class="div-hc e2" style="margin-top:20px"></div>
+      <p class="Tbody e3" style="max-width:460px;font-size:.95rem;margin-top:4px">We are happy to answer your questions.</p>
+      <div class="e4" style="margin-top:24px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <span class="pbadge pb-hi" style="font-size:.62rem;padding:6px 16px">NEXUS RESCUE</span>
+        <span class="pbadge pb-lo" style="font-size:.62rem;padding:6px 16px">Q &amp; A</span>
+      </div>
+      <p style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--text3);margin-top:16px" class="e5">sm-sayem-hossain.github.io/nexus-rescue/</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+/* ── ENGINE ── */
+const slides=[...document.querySelectorAll('.slide')];
+const N=slides.length;
+let cur=0,busy=false;
+const PF=document.getElementById('PF');
+const ninfo=document.getElementById('ninfo');
+const dotsW=document.getElementById('dots');
+const p=n=>String(n).padStart(2,'0');
+
+slides.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' on':'');
+  d.addEventListener('click',()=>go(i));
+  dotsW.appendChild(d);
+});
+
+function ui(){
+  PF.style.width=((cur+1)/N*100)+'%';
+  ninfo.textContent=p(cur+1)+' / '+p(N);
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+}
+
+function go(next){
+  if(busy||next===cur)return;
+  busy=true;
+  const from=slides[cur],to=slides[next];
+  function clean(el){el.classList.remove('entering','leaving','active','prev')}
+  clean(from);clean(to);
+  from.classList.add('prev','leaving');from.classList.remove('active');
+  to.classList.add('active','entering');
+  cur=next;ui();
+  if(cur===6)startCode1();
+  if(cur===7)startCode2();
+  if(cur===8)drawTree();
+  setTimeout(()=>{from.classList.remove('prev','leaving');busy=false},520);
+  setTimeout(()=>{to.classList.remove('entering')},1200);
+}
+
+document.getElementById('BN').addEventListener('click',()=>go((cur+1)%N));
+document.getElementById('BP').addEventListener('click',()=>go((cur-1+N)%N));
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' '].includes(e.key)){e.preventDefault();go((cur+1)%N)}
+  if(['ArrowLeft','ArrowUp'].includes(e.key)){e.preventDefault();go((cur-1+N)%N)}
+  if(e.key==='f'||e.key==='F')FSbtn.click();
+});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>55)go(dx<0?(cur+1)%N:(cur-1+N)%N)});
+let wc=false;
+document.addEventListener('wheel',e=>{if(wc)return;wc=true;go(e.deltaY>0?(cur+1)%N:(cur-1+N)%N);setTimeout(()=>wc=false,900)},{passive:true});
+
+/* ── FULLSCREEN ── */
+const FSbtn=document.getElementById('FSbtn'),FSico=document.getElementById('FSico');
+const EXPAND=`<polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line>`;
+const SHRINK=`<polyline points="4 14 10 14 10 20"></polyline><polyline points="20 4 14 4 14 10"></polyline><line x1="10" y1="20" x2="3" y2="13"></line><line x1="14" y1="10" x2="21" y2="3"></line>`;
+function isFS(){return!!(document.fullscreenElement||document.webkitFullscreenElement)}
+function updateFS(){FSico.innerHTML=isFS()?SHRINK:EXPAND}
+FSbtn.addEventListener('click',()=>{if(!isFS()){const el=document.documentElement;(el.requestFullscreen||el.webkitRequestFullscreen).call(el)}else{(document.exitFullscreen||document.webkitExitFullscreen).call(document)}});
+document.addEventListener('fullscreenchange',updateFS);
+document.addEventListener('webkitfullscreenchange',updateFS);
+
+/* ── TREE CANVAS ── */
+function drawTree(){
+  const canvas=document.getElementById('treeCanvas');
+  if(!canvas)return;
+  const parent=canvas.parentElement;
+  canvas.width=parent.clientWidth;
+  canvas.height=parent.clientHeight;
+  const ctx=canvas.getContext('2d');
+  const connections=[
+    ['tn-root','tn-disasters'],['tn-root','tn-teams'],['tn-root','tn-blocks'],['tn-root','tn-admins'],
+    ['tn-disasters','tn-d1'],['tn-disasters','tn-d2'],
+    ['tn-teams','tn-t1'],['tn-teams','tn-t2'],
+    ['tn-blocks','tn-b1'],
+    ['tn-admins','tn-a1'],
+    ['tn-d1','tn-d3'],['tn-d1','tn-d4'],
+    ['tn-t1','tn-t3'],
+    ['tn-a1','tn-a2'],
+  ];
+  function getCenter(id){
+    const el=document.getElementById(id);
+    if(!el)return[0,0];
+    const r=el.getBoundingClientRect();
+    const pr=canvas.getBoundingClientRect();
+    return[r.left-pr.left+r.width/2, r.top-pr.top+r.height/2];
+  }
+  let prog=0;
+  function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    prog=Math.min(prog+0.016,1);
+    connections.forEach((c,i)=>{
+      const [ax,ay]=getCenter(c[0]);
+      const [bx,by]=getCenter(c[1]);
+      const ep=Math.max(0,Math.min(1,(prog*connections.length - i)/1.8));
+      ctx.beginPath();
+      ctx.moveTo(ax,ay);
+      ctx.lineTo(ax+(bx-ax)*ep, ay+(by-ay)*ep);
+      ctx.strokeStyle='rgba(197,108,134,0.22)';
+      ctx.lineWidth=1;
+      ctx.setLineDash([3,5]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      if(ep>0.15){
+        const t=(Date.now()/1400+i*0.4)%1;
+        ctx.beginPath();
+        ctx.arc(ax+(bx-ax)*t, ay+(by-ay)*t, 2.5, 0, Math.PI*2);
+        ctx.fillStyle='rgba(255,117,130,0.65)';
+        ctx.fill();
+      }
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/* ── CODE TYPEWRITER ── */
+const CODE1=`<span class="c-cm">// Priority Queue + Stack — Disaster Manager</span>
+<span class="c-kw">#define</span> MAX <span class="c-num">100</span>
+
+<span class="c-kw">typedef struct</span> {
+    <span class="c-kw">char</span> id[<span class="c-num">20</span>];
+    <span class="c-kw">int</span>  priority; <span class="c-cm">// 0=Emergency..3=Low</span>
+    <span class="c-kw">char</span> location[<span class="c-num">50</span>];
+} Disaster;
+
+<span class="c-cm">// Stack for EMERGENCY (LIFO)</span>
+Disaster emergStack[MAX];
+<span class="c-kw">int</span> stackTop = <span class="c-num">-1</span>;
+
+<span class="c-kw">void</span> <span class="c-fn">stackPush</span>(Disaster d) {
+    emergStack[++stackTop] = d;
+}
+Disaster <span class="c-fn">stackPop</span>() {
+    <span class="c-kw">return</span> emergStack[stackTop--];
+}
+
+<span class="c-cm">// Priority Queue (Min-Heap) for rest</span>
+Disaster pQueue[MAX];
+<span class="c-kw">int</span> pSize = <span class="c-num">0</span>;`;
+
+const CODE2=`<span class="c-cm">// Graph + Dijkstra — Route Optimizer</span>
+<span class="c-kw">#define</span> INF <span class="c-num">99999</span>
+<span class="c-kw">#define</span> V   <span class="c-num">200</span>
+
+<span class="c-kw">int</span> graph[V][V]; <span class="c-cm">// adjacency matrix</span>
+<span class="c-kw">int</span> blocked[V][V]; <span class="c-cm">// road block flags</span>
+
+<span class="c-kw">void</span> <span class="c-fn">addRoadBlock</span>(<span class="c-kw">int</span> u, <span class="c-kw">int</span> v) {
+    blocked[u][v] = <span class="c-num">1</span>;
+    blocked[v][u] = <span class="c-num">1</span>;
+}
+
+<span class="c-kw">int</span> <span class="c-fn">dijkstra</span>(<span class="c-kw">int</span> src, <span class="c-kw">int</span> dest) {
+    <span class="c-kw">int</span> dist[V], visited[V];
+    <span class="c-kw">for</span>(<span class="c-kw">int</span> i=<span class="c-num">0</span>; i&lt;V; i++) {
+        dist[i] = INF;
+        visited[i] = <span class="c-num">0</span>;
+    }
+    dist[src] = <span class="c-num">0</span>;
+    <span class="c-kw">for</span>(<span class="c-kw">int</span> c=<span class="c-num">0</span>; c&lt;V-<span class="c-num">1</span>; c++) {
+        <span class="c-kw">int</span> u = <span class="c-fn">minDist</span>(dist, visited);
+        visited[u] = <span class="c-num">1</span>;
+    }
+    <span class="c-kw">return</span> dist[dest];
+}`;
+
+function typeCode(elId, html, delay=400){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  el.innerHTML='';
+  const chunks=[];
+  let i=0;
+  while(i<html.length){
+    if(html[i]==='<'){
+      const end=html.indexOf('>',i);
+      chunks.push({tag:true,val:html.slice(i,end+1)});
+      i=end+1;
+    } else {
+      chunks.push({tag:false,val:html[i]});
+      i++;
+    }
+  }
+  let ci=0;
+  function next(){
+    if(ci>=chunks.length)return;
+    const c=chunks[ci++];
+    if(c.tag){el.innerHTML+=c.val;next()}
+    else{el.innerHTML+=c.val;setTimeout(next,14)}
+  }
+  setTimeout(next,delay);
+}
+
+let code1Done=false,code2Done=false;
+function startCode1(){if(!code1Done){code1Done=true;typeCode('codeOut1',CODE1,500)}}
+function startCode2(){if(!code2Done){code2Done=true;typeCode('codeOut2',CODE2,500)}}
+
+/* ── INIT ── */
+slides[0].classList.add('entering');
+setTimeout(()=>slides[0].classList.remove('entering'),1200);
+ui();
+</script>
+</body>
+</html>
