@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minimum Spanning Tree — Discrete Mathematics</title>
+  <link rel="stylesheet" href="index.css">
+  <!-- KaTeX for LaTeX math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
+</head>
+<body>
+
+  <!-- --- TOP NAVIGATION HUD --- -->
+  <div id="nav">
+    <div class="logo">CSE212 <span>MST</span></div>
+    <div id="memberBadge" class="member-badge">Member 1</div>
+  </div>
+
+  <!-- --- SIDE DOTS NAV --- -->
+  <div id="dots"></div>
+
+  <!-- --- BOTTOM CONTROLS HUD --- -->
+  <div id="bot">
+    <div class="progress-track">
+      <div id="progressFill" class="progress-fill"></div>
+    </div>
+    <div class="controls">
+      <button id="btnPrev" class="btn" title="Previous Slide (← / Up)">←</button>
+      <button id="btnNotes" class="btn" title="Presenter Notes (N)">📝</button>
+      <button id="btnFS" class="btn" title="Fullscreen (F)">⛶</button>
+      <button id="btnNext" class="btn" title="Next Slide (Space / → / Down)">→</button>
+    </div>
+  </div>
+
+  <!-- --- SLIDE DECK --- -->
+  <div id="deck">
+
+    <!-- SLIDE 1: HERO (M1) -->
+    <div class="slide active tr-morph" data-speaker="Member 1" data-section="Introduction">
+      <div class="bg" style="background-image:url('bg1.png')"></div>
+      <div class="ov ov-l"></div>
+      <div class="ov" style="background:linear-gradient(to bottom,rgba(25,32,48,.3) 0%,transparent 35%,rgba(25,32,48,.8) 100%)"></div>
+      <div class="bg-grad"></div>
+      <div class="sc">
+        <div class="vcl">
+          <div class="eyebrow e0">CSE212 — Discrete Mathematics</div>
+          <div class="T1 e1" style="max-width:820px">
+            <div>MINIMUM</div>
+            <div>SPANNING <span class="hi">TREE</span></div>
+          </div>
+          <div class="div-h e2" style="margin-top:22px"></div>
+          <p class="Tbody e3" style="max-width:480px;margin-top:10px;font-size:.95rem">
+            A study of greedy algorithms — Kruskal's and Prim's — for finding the minimum cost connected subgraph in a weighted graph.
+          </p>
+          <div class="e4" style="margin-top:28px">
+            <div style="font-family:'Playfair Display',serif;font-size:clamp(1rem,2vw,1.6rem);color:var(--coral);font-style:italic;font-weight:400;letter-spacing:.01em">"Connect Everything. Spend the Minimum."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: TEAM (M1) -->
+    <div class="slide tr-curtain" data-speaker="Member 1" data-section="Introduction">
+      <div class="bg-dark"></div>
+      <div class="dotbg"></div>
+      <div class="bg-grad"></div>
+      <div class="sc">
+        <div class="ctr">
+          <div class="eyebrow e0" style="justify-content:center">CSE212 — Discrete Mathematics</div>
+          <div class="T2 e1">Meet the <span class="hi">Team</span></div>
+          <div class="div-hc e2"></div>
+          <div class="e3" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;max-width:900px;margin-top:20px;width:100%">
+            <div class="mcard">
+              <div class="mav"><img src="assets/team/member1.png" alt="Layba Zareen Zarrah" onerror="this.parentElement.innerHTML='👤'"></div>
+              <div class="mn">Layba Zareen Zarrah</div>
+              <div class="mt">ID: 252-15-058</div>
+              <div class="mrole">Member 1</div>
+            </div>
+            <div class="mcard">
+              <div class="mav"><img src="assets/team/member2.png" alt="Md Rezwan UL Karim" onerror="this.parentElement.innerHTML='👤'"></div>
+              <div class="mn">Md Rezwan UL Karim</div>
+              <div class="mt">ID: 252-15-030</div>
+              <div class="mrole">Member 2</div>
+            </div>
+            <div class="mcard">
+              <div class="mav"><img src="assets/team/member3.png" alt="Nano Sneha" onerror="this.parentElement.innerHTML='👤'"></div>
+              <div class="mn">Nano Sneha</div>
+              <div class="mt">ID: 252-15-196</div>
+              <div class="mrole">Member 3</div>
+            </div>
+            <div class="mcard">
+              <div class="mav"><img src="assets/team/member4.png" alt="Tawaf Sawadul Islam Ryeed" onerror="this.parentElement.innerHTML='👤'"></div>
+              <div class="mn">Tawaf Sawadul Islam Ryeed</div>
+              <div class="mt">ID: 252-15-128</div>
+              <div class="mrole">Member 4</div>
+            </div>
+            <div class="mcard">
+              <div class="mav"><img src="assets/team/member5.png" alt="S. M. Sayem Hossain" onerror="this.parentElement.innerHTML='👤'"></div>
+              <div class="mn">S. M. Sayem Hossain</div>
+              <div class="mt">ID: 252-15-104</div>
+              <div class="mrole">Member 5</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Graph Basics Recap (M1) -->
+    <div class="slide tr-push" data-speaker="Member 1" data-section="Graph Theory Basics">
+      <div class="split-layout">
+        <div class="split-left">
+          <span class="slide-tag e0">Prerequisites</span>
+          <h2 class="T2 e1">Graph Theory <span>Recap</span></h2>
+          <p class="Tbody e2" style="margin-top: 15px; margin-bottom: 25px;">
+            Before studying spanning trees, let's define the fundamental structure of a weighted, connected graph.
+          </p>
+          <div class="glass-panel e3">
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.95rem;">
+              <li>🟢 <strong>Connected Graph:</strong> A path exists between every pair of vertices.</li>
+              <li>🔵 <strong>Undirected Graph:</strong> Edges are bidirectional relations (no arrows).</li>
+              <li>🟡 <strong>Weighted Graph:</strong> Each edge has an associated numerical value representing cost, distance, or time.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="split-right">
+          <div class="glass-panel eS" style="width: 100%; text-align: center;">
+            <svg width="280" height="240" viewBox="0 0 280 240" style="margin: auto;">
+              <!-- Edges -->
+              <line x1="60" y1="50" x2="220" y2="50" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+              <line x1="60" y1="50" x2="140" y2="180" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+              <line x1="220" y1="50" x2="140" y2="180" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+              
+              <!-- Edge Weights -->
+              <rect x="130" y="38" width="20" height="20" rx="4" fill="#192030" stroke="var(--border2)" width="24" height="24"/>
+              <text x="140" y="52" fill="var(--text2)" font-family="DM Mono" font-size="11" text-anchor="middle">5</text>
+              
+              <rect x="90" y="105" width="20" height="20" rx="4" fill="#192030" stroke="var(--border2)" width="24" height="24"/>
+              <text x="100" y="120" fill="var(--text2)" font-family="DM Mono" font-size="11" text-anchor="middle">8</text>
+              
+              <rect x="170" y="105" width="20" height="20" rx="4" fill="#192030" stroke="var(--border2)" width="24" height="24"/>
+              <text x="180" y="120" fill="var(--text2)" font-family="DM Mono" font-size="11" text-anchor="middle">2</text>
+              
+              <!-- Nodes -->
+              <circle cx="60" cy="50" r="16" fill="var(--navy)" stroke="var(--coral)" stroke-width="2"/>
+              <text x="60" y="54" fill="var(--text)" font-weight="bold" font-size="12" text-anchor="middle">U</text>
+              
+              <circle cx="220" cy="50" r="16" fill="var(--navy)" stroke="var(--coral)" stroke-width="2"/>
+              <text x="220" y="54" fill="var(--text)" font-weight="bold" font-size="12" text-anchor="middle">V</text>
+              
+              <circle cx="140" cy="180" r="16" fill="var(--navy)" stroke="var(--coral)" stroke-width="2"/>
+              <text x="140" y="184" fill="var(--text)" font-weight="bold" font-size="12" text-anchor="middle">W</text>
+            </svg>
+            <p style="font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--text3); margin-top: 10px;">
+              G = (V, E) with Weight Function w: E → ℝ
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Spanning Trees (M1) -->
+    <div class="slide tr-push" data-speaker="Member 1" data-section="Graph Theory Basics">
+      <div class="split-layout">
+        <div class="split-left">
+          <span class="slide-tag e0">Definitions</span>
+          <h2 class="T2 e1">What is a <span>Spanning Tree?</span></h2>
+          <p class="Tbody e2" style="margin-top: 15px; margin-bottom: 25px;">
+            A spanning tree is a subset of graph edges that covers all vertices without forming cycles.
+          </p>
+          <div class="glass-panel e3">
+            <h4 style="color: var(--coral); margin-bottom: 8px; font-weight: 600;">Mathematical Conditions:</h4>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;">
+              <li>📐 <strong>Sub-graph:</strong> Contains a subset of the edges of the parent graph.</li>
+              <li>📏 <strong>Includes All Vertices:</strong> $V_{tree} = V_{graph}$.</li>
+              <li>🔗 <strong>Acyclic & Connected:</strong> Has exactly $E = V - 1$ edges.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="split-right">
+          <div class="glass-panel eS" style="width: 100%;">
+            <h4 style="font-size: 0.85rem; color: var(--text2); margin-bottom: 12px; text-align: center;">Two Different Spanning Trees of the Same Graph</h4>
+            <div style="display: flex; gap: 20px; justify-content: center;">
+              <!-- ST 1 -->
+              <svg width="120" height="130" viewBox="0 0 120 130">
+                <line x1="20" y1="20" x2="100" y2="20" stroke="var(--coral)" stroke-width="3"/>
+                <line x1="20" y1="20" x2="60" y2="100" stroke="var(--coral)" stroke-width="3"/>
+                <line x1="100" y1="20" x2="60" y2="100" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" stroke-width="1.5"/>
+                <circle cx="20" cy="20" r="8" fill="var(--bg)" stroke="var(--text3)"/>
+                <circle cx="100" cy="20" r="8" fill="var(--bg)" stroke="var(--text3)"/>
+                <circle cx="60" cy="100" r="8" fill="var(--bg)" stroke="var(--text3)"/>
+              </svg>
+              <!-- ST 2 -->
+              <svg width="120" height="130" viewBox="0 0 120 130">
+                <line x1="20" y1="20" x2="100" y2="20" stroke="var(--coral)" stroke-width="3"/>
+                <line x1="20" y1="20" x2="60" y2="100" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" stroke-width="1.5"/>
+                <line x1="100" y1="20" x2="60" y2="100" stroke="var(--coral)" stroke-width="3"/>
+                <circle cx="20" cy="20" r="8" fill="var(--bg)" stroke="var(--text3)"/>
+                <circle cx="100" cy="20" r="8" fill="var(--bg)" stroke="var(--text3)"/>
+                <circle cx="60" cy="100" r="8" fill="var(--bg)" stroke="var(--text3)"/>
+              </svg>
+            </div>
+            <p style="text-align: center; font-size: 0.72rem; color: var(--rose); margin-top: 8px;">Edges in red/rose form Spanning Trees</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Minimum Spanning Tree (M2) -->
+    <div class="slide tr-curtain" data-speaker="Member 2" data-section="Minimum Spanning Trees">
+      <div class="container-center">
+        <span class="slide-tag e0">The Core Goal</span>
+        <h2 class="T2 e1">The Minimum Spanning <span>Tree (MST)</span></h2>
+        <p class="Tbody e2" style="margin-top: 15px; margin-bottom: 30px; text-align: center;">
+          In a weighted graph, we want to find the spanning tree that minimizes the total cost.
+        </p>
+        
+        <div class="formula-box e3">
+          Minimize: Cost(T) = ∑<sub>e ∈ T</sub> weight(e)
+        </div>
+        
+        <div class="grid-3 e4" style="max-width: 900px;">
+          <div class="card-feature">
+            <span class="card-num">01</span>
+            <h3 class="card-title">Minimize Weight</h3>
+            <p class="card-desc">The sum of all edge weights in the spanning tree must be the minimum possible value.</p>
+          </div>
+          <div class="card-feature">
+            <span class="card-num">02</span>
+            <h3 class="card-title">No Cycles</h3>
+            <p class="card-desc">Must remain a tree. Adding any extra edge will create a loop/cycle, ruining spanning property.</p>
+          </div>
+          <div class="card-feature">
+            <span class="card-num">03</span>
+            <h3 class="card-title">Uniqueness</h3>
+            <p class="card-desc">If all edge weights in the graph are distinct, then there exists exactly one unique MST.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Real-World Analogy (M2) -->
+    <div class="slide tr-push" data-speaker="Member 2" data-section="Minimum Spanning Trees">
+      <div class="bg" style="background-image:url('assets/illustrations/cables.jpg')"></div>
+      <div class="ov ov-d" style="background:rgba(25,32,48,0.92)"></div>
+      <div class="sc">
+        <div class="split-layout">
+          <div class="split-left">
+            <span class="slide-tag e0">Intuition</span>
+            <h2 class="T2 e1">The Cable Network <span>Analogy</span></h2>
+            <p class="Tbody e2" style="margin-top: 15px; margin-bottom: 20px;">
+              Imagine a telecommunications provider connecting 5 offices across different cities.
+            </p>
+            <div class="glass-panel e3">
+              <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text2);">
+                <strong>The Problem:</strong> Laying down fiber optic cables is extremely expensive. We want to ensure all offices are connected to the network, but we want to spend the absolute minimum amount of capital on cables.
+              </p>
+              <p style="font-size: 0.95rem; line-height: 1.6; color: var(--coral); margin-top: 10px;">
+                <strong>The Solution:</strong> Finding the Minimum Spanning Tree provides the optimal cabling topology layout.
+              </p>
+            </div>
+          </div>
+          <div class="split-right">
+            <div class="glass-panel eS" style="width: 100%; text-align: center;">
+              <svg width="280" height="240" viewBox="0 0 280 240" style="margin: auto;">
+                <!-- Office connections -->
+                <line x1="40" y1="120" x2="140" y2="50" stroke="var(--coral)" stroke-width="4"/>
+                <line x1="140" y1="50" x2="240" y2="120" stroke="var(--coral)" stroke-width="4"/>
+                <line x1="40" y1="120" x2="100" y2="200" stroke="var(--coral)" stroke-width="4"/>
+                <line x1="240" y1="120" x2="180" y2="200" stroke="var(--coral)" stroke-width="4"/>
+                <!-- Redundant edge -->
+                <line x1="100" y1="200" x2="180" y2="200" stroke="rgba(197, 108, 134, 0.3)" stroke-dasharray="5,5" stroke-width="2"/>
+                
+                <circle cx="40" cy="120" r="14" fill="var(--navy)" stroke="var(--coral)" stroke-width="2"/>
+                <circle cx="140" cy="50" r="14" fill="var(--navy)" stroke="var(--coral)" stroke-width="2"/>
+                <circle cx="240" cy="120" r="14" fill="var(--navy)" stroke="var(--coral)" stroke-width="2"/>
+                <circle cx="100" cy="200" r="14" fill="var(--navy)" stroke="var(--coral)" stroke-width="2"/>
+                <circle cx="180" cy="200" r="14" fill="var(--navy)" stroke="var(--coral)" stroke-width="2"/>
+                
+                <text x="40" y="124" fill="#fff" font-weight="bold" font-size="10" text-anchor="middle">O1</text>
+                <text x="140" y="54" fill="#fff" font-weight="bold" font-size="10" text-anchor="middle">O2</text>
+                <text x="240" y="124" fill="#fff" font-weight="bold" font-size="10" text-anchor="middle">O3</text>
+                <text x="100" y="204" fill="#fff" font-weight="bold" font-size="10" text-anchor="middle">O4</text>
+                <text x="180" y="204" fill="#fff" font-weight="bold" font-size="10" text-anchor="middle">O5</text>
+              </svg>
+              <p style="font-size: 0.72rem; color: var(--text3); margin-top: 10px;">
+                Optimal route layout connecting all 5 offices (MST).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Crucial MST Properties (M2) -->
+    <div class="slide tr-push" data-speaker="Member 2" data-section="Minimum Spanning Trees">
+      <div class="container-center">
+        <span class="slide-tag e0">Mathematical Foundations</span>
+        <h2 class="T2 e1">Two Fundamental <span>Properties</span></h2>
+        <p class="Tbody e2" style="margin-top: 10px; margin-bottom: 30px;">
+          All major MST algorithms rely on these two core mathematical theorems:
+        </p>
+        
+        <div class="grid-3 e3" style="max-width: 900px; grid-template-columns: 1fr 1fr; justify-content: center;">
+          <div class="glass-panel">
+            <h3 style="color: var(--coral); font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 12px;">1. The Cut Property</h3>
+            <p class="Tbody" style="font-size: 0.88rem; line-height: 1.6;">
+              For any cut (partition of vertices into two sets) in a graph, the edge with the absolute minimum weight crossing the cut must belong to the MST.
+            </p>
+            <p style="color: var(--rose); font-size: 0.78rem; margin-top: 12px; font-weight: 600;">→ Relied on by Prim's Algorithm</p>
+          </div>
+          
+          <div class="glass-panel">
+            <h3 style="color: var(--rose); font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 12px;">2. The Cycle Property</h3>
+            <p class="Tbody" style="font-size: 0.88rem; line-height: 1.6;">
+              For any cycle in the graph, the edge with the absolute maximum weight in that cycle cannot belong to the Minimum Spanning Tree.
+            </p>
+            <p style="color: var(--rose); font-size: 0.78rem; margin-top: 12px; font-weight: 600;">→ Relied on by Kruskal's Algorithm</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Kruskal's Concept (M3) -->
+    <div class="slide tr-morph" data-speaker="Member 3" data-section="Kruskal's Algorithm">
+      <div class="split-layout">
+        <div class="split-left">
+          <span class="slide-tag e0">Algorithm 1</span>
+          <h2 class="T2 e1">Kruskal's <span>Algorithm</span></h2>
+          <p class="Tbody e2" style="margin-top: 15px; margin-bottom: 25px;">
+            Kruskal's is a greedy algorithm that grows the spanning tree by adding edges one by one in increasing order of weight.
+          </p>
+          <div class="glass-panel e3">
+            <h4 style="color: var(--coral); margin-bottom: 8px;">Key Steps:</h4>
+            <ol style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6; color: var(--text2);">
+              <li>Sort all edges of the graph by weight in ascending order.</li>
+              <li>Pick the smallest edge. If it forms a cycle with already selected edges, discard it.</li>
+              <li>Repeat until there are $V - 1$ edges in the tree.</li>
+            </ol>
+          </div>
+        </div>
+        <div class="split-right">
+          <div class="code-window eS">
+            <div class="code-header">
+              <div class="code-dots">
+                <span class="code-dot red"></span>
+                <span class="code-dot yellow"></span>
+                <span class="code-dot green"></span>
+              </div>
+              <span class="code-title">Kruskal's Pseudocode</span>
+            </div>
+            <div class="code-content">
+<pre><span class="code-kw">Algorithm</span> <span class="code-fn">Kruskal</span>(G):
+    A = ∅  <span class="code-comment">// MST initially empty</span>
+    
+    <span class="code-kw">for</span> each vertex v ∈ G.V:
+        MAKE-SET(v)
+        
+    sort the edges of G.E into nondecreasing 
+    order by weight w
+    
+    <span class="code-kw">for</span> each edge (u, v) ∈ G.E:
+        <span class="code-kw">if</span> FIND-SET(u) ≠ FIND-SET(v):
+            A = A ∪ {(u, v)}
+            UNION(u, v)
+            
+    <span class="code-kw">return</span> A</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Step-by-Step Kruskal Simulation (M3) -->
+    <div class="slide tr-push" data-speaker="Member 3" data-section="Kruskal's Algorithm">
+      <div class="split-layout" style="grid-template-columns: 1fr 1fr;">
+        <div class="split-left">
+          <span class="slide-tag e0">Simulation</span>
+          <h2 class="T2 e1">Kruskal's <span>Simulation</span></h2>
+          <p class="Tbody e2" style="margin-top: 10px; margin-bottom: 20px; font-size: 0.9rem;">
+            Watch Kruskal's algorithm process edges in ascending weight order. We reject any edge that connects two nodes in the same connected component.
+          </p>
+          
+          <div id="kruskalLog" class="status-log e3">
+            Click "Next Step" to start Kruskal's simulation.
+          </div>
+        </div>
+        <div class="split-right">
+          <div class="canvas-container eS">
+            <canvas id="kruskalCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+            <div class="canvas-controls">
+              <button id="btnKruskalReset" class="canvas-btn">↺ Reset</button>
+              <button id="btnKruskalNext" class="canvas-btn" style="background: var(--coral);">Next Step →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Cycle Detection (DSU) & Complexity (M3) -->
+    <div class="slide tr-push" data-speaker="Member 3" data-section="Kruskal's Algorithm">
+      <div class="split-layout">
+        <div class="split-left">
+          <span class="slide-tag e0">Data Structure & Complexity</span>
+          <h2 class="T2 e1">Disjoint Set Union <span>(DSU)</span></h2>
+          <p class="Tbody e2" style="margin-top: 15px; margin-bottom: 20px;">
+            To check if an edge forms a cycle efficiently, Kruskal's uses the <strong>Union-Find / Disjoint Set Union (DSU)</strong> data structure.
+          </p>
+          <div class="glass-panel e3">
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: var(--text2);">
+              <li>⚡ <strong>Find:</strong> Determines if $u, v$ have the same representative/root component.</li>
+              <li>⚡ <strong>Union:</strong> Joins two disjoint subsets together.</li>
+              <li>🚀 <strong>Optimization:</strong> Path compression and union by rank reduce time complexity queries to near constant time: $\alpha(V)$.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="split-right">
+          <div class="glass-panel eS" style="width: 100%;">
+            <h4 style="font-family: 'Playfair Display', serif; font-weight: 700; margin-bottom: 12px; color: var(--coral);">Kruskal's Complexity:</h4>
+            <div style="font-family: 'DM Mono', monospace; font-size: 1.1rem; border-left: 2px solid var(--rose); padding-left: 14px; margin-bottom: 18px;">
+              Time: \mathcal{O}(E \log E) \text{ or } \mathcal{O}(E \log V)<br>
+              Space: \mathcal{O}(V)
+            </div>
+            <p style="font-size: 0.8rem; line-height: 1.5; color: var(--text2);">
+              The time complexity is dominated by sorting the edges of the graph, which takes $\mathcal{O}(E \log E)$.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Prim's Concept (M4) -->
+    <div class="slide tr-morph" data-speaker="Member 4" data-section="Prim's Algorithm">
+      <div class="split-layout">
+        <div class="split-left">
+          <span class="slide-tag e0">Algorithm 2</span>
+          <h2 class="T2 e1">Prim's <span>Algorithm</span></h2>
+          <p class="Tbody e2" style="margin-top: 15px; margin-bottom: 25px;">
+            Prim's is a node-based greedy algorithm. It starts from a single vertex and expands outward, picking the cheapest edge connecting to a new node.
+          </p>
+          <div class="glass-panel e3">
+            <h4 style="color: var(--coral); margin-bottom: 8px;">Key Steps:</h4>
+            <ol style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6; color: var(--text2);">
+              <li>Choose an arbitrary starting vertex and add it to the MST set.</li>
+              <li>Find the cheapest edge connecting any node in the MST set to a node outside it.</li>
+              <li>Add this edge and the new node to the MST set.</li>
+              <li>Repeat until all vertices are in the MST.</li>
+            </ol>
+          </div>
+        </div>
+        <div class="split-right">
+          <div class="code-window eS">
+            <div class="code-header">
+              <div class="code-dots">
+                <span class="code-dot red"></span>
+                <span class="code-dot yellow"></span>
+                <span class="code-dot green"></span>
+              </div>
+              <span class="code-title">Prim's Pseudocode</span>
+            </div>
+            <div class="code-content">
+<pre><span class="code-kw">Algorithm</span> <span class="code-fn">Prim</span>(G, w, r):
+    <span class="code-kw">for</span> each u ∈ G.V:
+        u.key = ∞
+        u.π = NIL
+    r.key = 0
+    Q = G.V  <span class="code-comment">// Min-Priority Queue</span>
+    
+    <span class="code-kw">while</span> Q ≠ ∅:
+        u = EXTRACT-MIN(Q)
+        <span class="code-kw">for</span> each v ∈ G.Adj[u]:
+            <span class="code-kw">if</span> v ∈ Q and w(u, v) < v.key:
+                v.π = u
+                v.key = w(u, v)
+                DECREASE-KEY(Q, v, w(u, v))</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: Step-by-Step Prim Simulation (M4) -->
+    <div class="slide tr-push" data-speaker="Member 4" data-section="Prim's Algorithm">
+      <div class="split-layout" style="grid-template-columns: 1fr 1fr;">
+        <div class="split-left">
+          <span class="slide-tag e0">Simulation</span>
+          <h2 class="T2 e1">Prim's <span>Simulation</span></h2>
+          <p class="Tbody e2" style="margin-top: 10px; margin-bottom: 20px; font-size: 0.9rem;">
+            Watch Prim's algorithm expand node-by-node starting from Node A. At each step, it chooses the cheapest edge leaving the visited nodes frontier.
+          </p>
+          
+          <div id="primLog" class="status-log e3">
+            Click "Next Step" to start Prim's simulation from Node A.
+          </div>
+        </div>
+        <div class="split-right">
+          <div class="canvas-container eS">
+            <canvas id="primCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+            <div class="canvas-controls">
+              <button id="btnPrimReset" class="canvas-btn">↺ Reset</button>
+              <button id="btnPrimNext" class="canvas-btn" style="background: var(--coral);">Next Step →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 12: Priority Queue & Complexity (M4) -->
+    <div class="slide tr-push" data-speaker="Member 4" data-section="Prim's Algorithm">
+      <div class="split-layout">
+        <div class="split-left">
+          <span class="slide-tag e0">Data Structure & Complexity</span>
+          <h2 class="T2 e1">Priority Queue <span>(Heap)</span></h2>
+          <p class="Tbody e2" style="margin-top: 15px; margin-bottom: 20px;">
+            To quickly fetch the cheapest edge crossing, Prim's relies on a <strong>Priority Queue (Binary Heap)</strong>.
+          </p>
+          <div class="glass-panel e3">
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: var(--text2);">
+              <li>⚡ <strong>Heap Pop:</strong> Extracts the minimum weight edge in $\mathcal{O}(\log V)$ time.</li>
+              <li>⚡ <strong>Heap Push:</strong> Inserts new candidate edges in $\mathcal{O}(\log V)$ time.</li>
+              <li>🚀 <strong>Optimization:</strong> Using a Fibonacci Heap reduces edge updates to $\mathcal{O}(1)$, achieving $\mathcal{O}(E + V \log V)$ time complexity.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="split-right">
+          <div class="glass-panel eS" style="width: 100%;">
+            <h4 style="font-family: 'Playfair Display', serif; font-weight: 700; margin-bottom: 12px; color: var(--coral);">Prim's Complexity:</h4>
+            <div style="font-family: 'DM Mono', monospace; font-size: 1.1rem; border-left: 2px solid var(--rose); padding-left: 14px; margin-bottom: 18px;">
+              Adjacency List: O(E log V)<br>
+              Adjacency Matrix: O(V<sup>2</sup>)<br>
+              Fibonacci Heap: O(E + V log V)
+            </div>
+            <p style="font-size: 0.8rem; line-height: 1.5; color: var(--text2);">
+              Choosing the right implementation makes Prim's highly efficient for different graph densities.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 13: Kruskal vs Prim (M5) -->
+    <div class="slide tr-curtain" data-speaker="Member 5" data-section="Algorithms Comparison">
+      <div class="container-center">
+        <span class="slide-tag e0">Comparison</span>
+        <h2 class="T2 e1">Kruskal's vs. Prim's: <span>Which is Better?</span></h2>
+        <p class="Tbody e2" style="margin-top: 10px; margin-bottom: 20px;">
+          Both algorithms find the optimal solution, but their performance profiles suit different graph topologies.
+        </p>
+        
+        <div class="glass-panel e3" style="max-width: 900px; padding: 10px;">
+          <table class="comp-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Kruskal's Algorithm</th>
+                <th>Prim's Algorithm</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Approach</strong></td>
+                <td>Edge-Based (sorting and DSU)</td>
+                <td>Vertex-Based (growing tree frontier)</td>
+              </tr>
+              <tr>
+                <td><strong>Data Structures</strong></td>
+                <td>Sorting + DSU (Union-Find)</td>
+                <td>Priority Queue / Binary Min-Heap</td>
+              </tr>
+              <tr>
+                <td><strong>Best For</strong></td>
+                <td>Sparse graphs (fewer edges: $E \approx V$)</td>
+                <td>Dense graphs (many edges: $E \approx V^2$)</td>
+              </tr>
+              <tr>
+                <td><strong>Time Complexity</strong></td>
+                <td>$\mathcal{O}(E \log E)$</td>
+                <td>$\mathcal{O}(E \log V)$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 14: Real-world Applications (M5) -->
+    <div class="slide tr-push" data-speaker="Member 5" data-section="Real-World Applications">
+      <div class="container-center">
+        <span class="slide-tag e0">Applications</span>
+        <h2 class="T2 e1">Real-World <span>Applications</span></h2>
+        <p class="Tbody e2" style="margin-top: 10px; margin-bottom: 30px;">
+          Minimum Spanning Trees are utilized across a wide variety of practical domains:
+        </p>
+        
+        <div class="grid-3 e3" style="max-width: 900px;">
+          <div class="card-feature">
+            <span class="card-num">01</span>
+            <div class="card-img-container"><img src="assets/illustrations/network_design.jpg" class="card-img" alt="Network Design"></div>
+            <h3 class="card-title">Network Design</h3>
+            <p class="card-desc">Laying electricity grids, gas/water pipes, telephone wires, and computer networks at minimal cost.</p>
+          </div>
+          <div class="card-feature">
+            <span class="card-num">02</span>
+            <div class="card-img-container"><img src="assets/illustrations/clustering.jpg" class="card-img" alt="Machine Learning"></div>
+            <h3 class="card-title">Machine Learning</h3>
+            <p class="card-desc">Used in hierarchical clustering algorithms (Single-Linkage clustering is equivalent to finding an MST).</p>
+          </div>
+          <div class="card-feature">
+            <span class="card-num">03</span>
+            <div class="card-img-container"><img src="assets/illustrations/tsp.jpg" class="card-img" alt="TSP Approximations"></div>
+            <h3 class="card-title">TSP Approximations</h3>
+            <p class="card-desc">Providing high-quality bounds for NP-Hard routing problems (e.g., Christofides' TSP 1.5-approximation).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 15: Summary & Conclusion (M5) -->
+    <div class="slide tr-morph" data-speaker="Member 5" data-section="Conclusion">
+      <div class="bg" style="background-image:url('assets/bg/bg_outro.jpg')"></div>
+      <div class="ov ov-l"></div>
+      <div class="ov" style="background:linear-gradient(to bottom,rgba(25,32,48,.3) 0%,transparent 35%,rgba(25,32,48,.8) 100%)"></div>
+      <div class="bg-grad"></div>
+      <div class="sc">
+        <div class="container-center">
+          <span class="slide-tag e0">Wrap Up</span>
+          <h2 class="T2 e1">Summary & <span>Conclusion</span></h2>
+          <p class="Tbody e2" style="margin-top: 15px; margin-bottom: 30px;">
+            Minimum Spanning Trees provide critical optimization methods in Discrete Mathematics and computer science.
+          </p>
+          
+          <div class="glass-panel e3" style="max-width: 700px; text-align: left; padding: 25px;">
+            <h4 style="color: var(--rose); margin-bottom: 10px;">Key Takeaways:</h4>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.95rem; color: var(--text2);">
+              <li>💡 <strong>Concept:</strong> Spanning tree of a graph with the lowest total edge weight.</li>
+              <li>💡 <strong>Greedy Algorithms:</strong> Both Kruskal's and Prim's make optimal local choices at each step.</li>
+              <li>💡 <strong>Implementation:</strong> Kruskal uses sorting and DSU; Prim uses priority queues.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 16: Q&A / Thank You (M5) -->
+    <div class="slide tr-fade" data-speaker="Member 5" data-section="Conclusion">
+      <div class="bg" style="background-image:url('assets/bg/bg_outro.jpg')"></div>
+      <div class="ov ov-l"></div>
+      <div class="ov" style="background:linear-gradient(to bottom,rgba(25,32,48,.3) 0%,transparent 35%,rgba(25,32,48,.8) 100%)"></div>
+      <div class="bg-grad"></div>
+      <div class="sc">
+        <div class="container-center">
+          <span class="slide-tag e0">Questions</span>
+          <h2 class="T1 e1" style="font-size: clamp(3rem, 6vw, 6rem);">THANK <span class="hi">YOU!</span></h2>
+          <div class="div-hc e2" style="margin-top: 20px;"></div>
+          <p class="Tbody e3" style="font-size: 1.5rem; color: var(--text2); margin-top: 10px;">
+            Any Questions?
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- --- SCRIPTS FOR PRES & SIMULATORS --- -->
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dotsContainer = document.getElementById('dots');
+    const progressFill = document.getElementById('progressFill');
+    const memberBadge = document.getElementById('memberBadge');
+    
+    const N = slides.length;
+    let cur = 0;
+    let busy = false;
+
+    // Build side dots
+    for(let i=0; i<N; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i===0 ? ' on' : '');
+      dot.addEventListener('click', () => go(i));
+      dotsContainer.appendChild(dot);
+    }
+    const dots = document.querySelectorAll('.dot');
+
+    function updateHUD() {
+      // Progress
+      progressFill.style.width = ((cur) / (N - 1)) * 100 + '%';
+      
+      // Update dots
+      dots.forEach((dot, idx) => {
+        if(idx === cur) dot.classList.add('on');
+        else dot.classList.remove('on');
+      });
+
+      // Update speaker badge
+      const activeSlide = slides[cur];
+      const speaker = activeSlide.getAttribute('data-speaker');
+      memberBadge.textContent = speaker;
+    }
+
+    function go(nextIdx) {
+      if(busy || nextIdx === cur) return;
+      busy = true;
+
+      const from = slides[cur];
+      const to = slides[nextIdx];
+
+      from.classList.add('leaving');
+      to.classList.add('entering');
+      to.classList.add('active');
+
+      cur = nextIdx;
+      updateHUD();
+
+      // Trigger animations inside the newly active slide
+      setTimeout(() => {
+        from.classList.remove('active', 'leaving');
+        to.classList.remove('entering');
+        busy = false;
+        
+        // Trigger canvas animations when showing simulator slides
+        if(cur === 7) initKruskal();
+        if(cur === 10) initPrim();
+      }, 650); // Match transition duration in CSS
+    }
+
+    // Keyboard & buttons
+    document.getElementById('btnNext').addEventListener('click', () => go((cur + 1) % N));
+    document.getElementById('btnPrev').addEventListener('click', () => go((cur - 1 + N) % N));
+    
+    document.addEventListener('keydown', e => {
+      if(['ArrowRight', 'ArrowDown', ' '].includes(e.key)) {
+        e.preventDefault();
+        go((cur + 1) % N);
+      }
+      if(['ArrowLeft', 'ArrowUp'].includes(e.key)) {
+        e.preventDefault();
+        go((cur - 1 + N) % N);
+      }
+      if(e.key === 'f' || e.key === 'F') {
+        toggleFS();
+      }
+    });
+
+    // Fullscreen
+    function toggleFS() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {});
+      } else {
+        document.exitFullscreen();
+      }
+    }
+    document.getElementById('btnFS').addEventListener('click', toggleFS);
+
+    // Swipe controls
+    let tx = 0;
+    document.addEventListener('touchstart', e => {
+      tx = e.touches[0].clientX;
+    }, {passive: true});
+    document.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - tx;
+      if (Math.abs(dx) > 60) {
+        go(dx < 0 ? (cur + 1) % N : (cur - 1 + N) % N);
+      }
+    });
+
+    // Mouse wheel controls (debounced)
+    let wheelTimer = null;
+    document.addEventListener('wheel', e => {
+      if(wheelTimer) return;
+      wheelTimer = setTimeout(() => { wheelTimer = null; }, 900);
+      go(e.deltaY > 0 ? (cur + 1) % N : (cur - 1 + N) % N);
+    }, {passive: true});
+
+
+    /* =========================================================================
+       KRUSKAL'S ALGORITHM INTERACTIVE SIMULATOR (SLIDE 8)
+       ========================================================================= */
+    let kruskalState = {
+      nodes: [
+        { id: 'A', x: 60, y: 150 },
+        { id: 'B', x: 160, y: 70 },
+        { id: 'C', x: 160, y: 230 },
+        { id: 'D', x: 260, y: 70 },
+        { id: 'E', x: 260, y: 230 },
+        { id: 'F', x: 350, y: 150 }
+      ],
+      edges: [
+        { u: 'B', v: 'C', w: 1, state: 'unvisited' },
+        { u: 'A', v: 'C', w: 2, state: 'unvisited' },
+        { u: 'D', v: 'E', w: 2, state: 'unvisited' },
+        { u: 'E', v: 'F', w: 3, state: 'unvisited' },
+        { u: 'A', v: 'B', w: 4, state: 'unvisited' },
+        { u: 'B', v: 'D', w: 5, state: 'unvisited' },
+        { u: 'D', v: 'F', w: 6, state: 'unvisited' },
+        { u: 'C', v: 'D', w: 8, state: 'unvisited' },
+        { u: 'C', v: 'E', w: 10, state: 'unvisited' }
+      ],
+      step: 0,
+      parent: {}
+    };
+
+    function findSet(v) {
+      if (kruskalState.parent[v] === v) return v;
+      return kruskalState.parent[v] = findSet(kruskalState.parent[v]);
+    }
+
+    function unionSets(u, v) {
+      let rootU = findSet(u);
+      let rootV = findSet(v);
+      if (rootU !== rootV) {
+        kruskalState.parent[rootU] = rootV;
+        return true;
+      }
+      return false;
+    }
+
+    function initKruskal() {
+      kruskalState.step = 0;
+      kruskalState.edges.forEach(e => e.state = 'unvisited');
+      kruskalState.nodes.forEach(n => kruskalState.parent[n.id] = n.id);
+      document.getElementById('kruskalLog').innerHTML = "🟢 Sorted edges: [B-C:1, A-C:2, D-E:2, E-F:3, A-B:4, B-D:5, D-F:6, C-D:8, C-E:10]. Click Next to start.";
+      drawKruskal();
+    }
+
+    function drawKruskal() {
+      const canvas = document.getElementById('kruskalCanvas');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      const scaleX = canvas.width / 400;
+      const scaleY = canvas.height / 300;
+
+      // Draw edges
+      kruskalState.edges.forEach(edge => {
+        const uNode = kruskalState.nodes.find(n => n.id === edge.u);
+        const vNode = kruskalState.nodes.find(n => n.id === edge.v);
+        
+        ctx.beginPath();
+        ctx.moveTo(uNode.x * scaleX, uNode.y * scaleY);
+        ctx.lineTo(vNode.x * scaleX, vNode.y * scaleY);
+        
+        if (edge.state === 'accepted') {
+          ctx.strokeStyle = '#a8d8a8'; // Light Green
+          ctx.lineWidth = 4;
+        } else if (edge.state === 'rejected') {
+          ctx.strokeStyle = '#ff7582'; // Coral Red
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 4]);
+        } else if (edge.state === 'checking') {
+          ctx.strokeStyle = '#f4b96e'; // Gold Yellow
+          ctx.lineWidth = 4;
+        } else {
+          ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+          ctx.lineWidth = 1.5;
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Draw Edge Weight
+        const midX = ((uNode.x + vNode.x) / 2) * scaleX;
+        const midY = ((uNode.y + vNode.y) / 2) * scaleY;
+        ctx.fillStyle = '#151b26';
+        ctx.fillRect(midX - 10, midY - 10, 20, 20);
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.strokeRect(midX - 10, midY - 10, 20, 20);
+        ctx.fillStyle = '#b8c8d8';
+        ctx.font = 'bold 11px DM Mono';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(edge.w, midX, midY);
+      });
+
+      // Draw Nodes
+      kruskalState.nodes.forEach(node => {
+        ctx.beginPath();
+        ctx.arc(node.x * scaleX, node.y * scaleY, 14, 0, Math.PI * 2);
+        
+        ctx.fillStyle = '#1e2a3a';
+        ctx.strokeStyle = '#725A7A';
+        ctx.lineWidth = 2;
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#f0eaf4';
+        ctx.font = 'bold 11px DM Sans';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(node.id, node.x * scaleX, node.y * scaleY);
+      });
+    }
+
+    function stepKruskal() {
+      if (kruskalState.step >= kruskalState.edges.length) {
+        document.getElementById('kruskalLog').innerHTML = "🎉 Kruskal's algorithm complete! MST found (total weight = 13).";
+        return;
+      }
+
+      kruskalState.edges.forEach(e => {
+        if(e.state === 'checking') e.state = 'unvisited';
+      });
+
+      let edge = kruskalState.edges[kruskalState.step];
+      edge.state = 'checking';
+      drawKruskal();
+
+      setTimeout(() => {
+        const uRoot = findSet(edge.u);
+        const vRoot = findSet(edge.v);
+        
+        if (uRoot !== vRoot) {
+          unionSets(edge.u, edge.v);
+          edge.state = 'accepted';
+          document.getElementById('kruskalLog').innerHTML = `✅ Add edge ${edge.u}-${edge.v} (weight ${edge.w}). No cycle.`;
+        } else {
+          edge.state = 'rejected';
+          document.getElementById('kruskalLog').innerHTML = `❌ Reject edge ${edge.u}-${edge.v} (weight ${edge.w}). Forms cycle.`;
+        }
+        
+        kruskalState.step++;
+        drawKruskal();
+      }, 500);
+    }
+
+    document.getElementById('btnKruskalNext').addEventListener('click', stepKruskal);
+    document.getElementById('btnKruskalReset').addEventListener('click', initKruskal);
+
+
+    /* =========================================================================
+       PRIM'S ALGORITHM INTERACTIVE SIMULATOR (SLIDE 11)
+       ========================================================================= */
+    let primState = {
+      nodes: [
+        { id: 'A', x: 60, y: 150, visited: false },
+        { id: 'B', x: 160, y: 70, visited: false },
+        { id: 'C', x: 160, y: 230, visited: false },
+        { id: 'D', x: 260, y: 70, visited: false },
+        { id: 'E', x: 260, y: 230, visited: false },
+        { id: 'F', x: 350, y: 150, visited: false }
+      ],
+      edges: [
+        { u: 'B', v: 'C', w: 1, state: 'unvisited' },
+        { u: 'A', v: 'C', w: 2, state: 'unvisited' },
+        { u: 'D', v: 'E', w: 2, state: 'unvisited' },
+        { u: 'E', v: 'F', w: 3, state: 'unvisited' },
+        { u: 'A', v: 'B', w: 4, state: 'unvisited' },
+        { u: 'B', v: 'D', w: 5, state: 'unvisited' },
+        { u: 'D', v: 'F', w: 6, state: 'unvisited' },
+        { u: 'C', v: 'D', w: 8, state: 'unvisited' },
+        { u: 'C', v: 'E', w: 10, state: 'unvisited' }
+      ],
+      visitedCount: 0,
+      step: 0
+    };
+
+    function initPrim() {
+      primState.step = 0;
+      primState.visitedCount = 0;
+      primState.nodes.forEach(n => n.visited = false);
+      primState.edges.forEach(e => e.state = 'unvisited');
+      
+      primState.nodes[0].visited = true;
+      primState.visitedCount = 1;
+      
+      document.getElementById('primLog').innerHTML = "🟢 Started Prim's from Node A. Visited set: {A}. Click Next.";
+      drawPrim();
+    }
+
+    function drawPrim() {
+      const canvas = document.getElementById('primCanvas');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      const scaleX = canvas.width / 400;
+      const scaleY = canvas.height / 300;
+
+      // Draw Edges
+      primState.edges.forEach(edge => {
+        const uNode = primState.nodes.find(n => n.id === edge.u);
+        const vNode = primState.nodes.find(n => n.id === edge.v);
+        
+        ctx.beginPath();
+        ctx.moveTo(uNode.x * scaleX, uNode.y * scaleY);
+        ctx.lineTo(vNode.x * scaleX, vNode.y * scaleY);
+        
+        if (edge.state === 'accepted') {
+          ctx.strokeStyle = '#a8d8a8'; // Light Green
+          ctx.lineWidth = 4;
+        } else if (edge.state === 'checking') {
+          ctx.strokeStyle = '#f4b96e'; // Yellow
+          ctx.lineWidth = 4;
+        } else if ((uNode.visited && !vNode.visited) || (!uNode.visited && vNode.visited)) {
+          ctx.strokeStyle = 'rgba(255, 117, 130, 0.4)'; // Active Frontier
+          ctx.lineWidth = 2;
+        } else {
+          ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+          ctx.lineWidth = 1.5;
+        }
+        ctx.stroke();
+
+        // Weight
+        const midX = ((uNode.x + vNode.x) / 2) * scaleX;
+        const midY = ((uNode.y + vNode.y) / 2) * scaleY;
+        ctx.fillStyle = '#151b26';
+        ctx.fillRect(midX - 10, midY - 10, 20, 20);
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.strokeRect(midX - 10, midY - 10, 20, 20);
+        ctx.fillStyle = '#b8c8d8';
+        ctx.font = 'bold 11px DM Mono';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(edge.w, midX, midY);
+      });
+
+      // Draw Nodes
+      primState.nodes.forEach(node => {
+        ctx.beginPath();
+        ctx.arc(node.x * scaleX, node.y * scaleY, 14, 0, Math.PI * 2);
+        
+        if (node.visited) {
+          ctx.fillStyle = 'rgba(168, 216, 168, 0.2)';
+          ctx.strokeStyle = '#a8d8a8'; // Visited Node
+        } else {
+          ctx.fillStyle = '#1e2a3a';
+          ctx.strokeStyle = '#725A7A';
+        }
+        ctx.lineWidth = 2;
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#f0eaf4';
+        ctx.font = 'bold 11px DM Sans';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(node.id, node.x * scaleX, node.y * scaleY);
+      });
+    }
+
+    function stepPrim() {
+      if (primState.visitedCount >= primState.nodes.length) {
+        document.getElementById('primLog').innerHTML = "🎉 Prim's Algorithm complete! MST weight = 13.";
+        return;
+      }
+
+      let candidates = [];
+      primState.edges.forEach(e => {
+        if(e.state === 'unvisited') {
+          const uNode = primState.nodes.find(n => n.id === e.u);
+          const vNode = primState.nodes.find(n => n.id === e.v);
+          if ((uNode.visited && !vNode.visited) || (!uNode.visited && vNode.visited)) {
+            candidates.push(e);
+          }
+        }
+      });
+
+      if (candidates.length === 0) return;
+
+      candidates.sort((a, b) => a.w - b.w);
+      let bestEdge = candidates[0];
+
+      bestEdge.state = 'checking';
+      drawPrim();
+
+      setTimeout(() => {
+        bestEdge.state = 'accepted';
+        
+        const uNode = primState.nodes.find(n => n.id === bestEdge.u);
+        const vNode = primState.nodes.find(n => n.id === bestEdge.v);
+        
+        let newVertex = '';
+        if(!uNode.visited) {
+          uNode.visited = true;
+          newVertex = uNode.id;
+        } else {
+          vNode.visited = true;
+          newVertex = vNode.id;
+        }
+        
+        primState.visitedCount++;
+        
+        let visitedStr = primState.nodes.filter(n => n.visited).map(n => n.id).join(', ');
+        document.getElementById('primLog').innerHTML = `✅ Added Edge ${bestEdge.u}-${bestEdge.v} (weight ${bestEdge.w}). Set: {${visitedStr}}`;
+        
+        drawPrim();
+      }, 500);
+    }
+
+    document.getElementById('btnPrimNext').addEventListener('click', stepPrim);
+    document.getElementById('btnPrimReset').addEventListener('click', initPrim);
+
+    window.addEventListener('resize', () => {
+      drawKruskal();
+      drawPrim();
+    });
+    updateHUD();
+
+    /* =========================================================================
+       PRESENTER NOTES — Toggle with 'N' key or the 📝 button
+       ========================================================================= */
+    const NOTES = [
+      // 1: Hero
+      ['🎯 <b>Topic:</b> MST = cheapest connected subgraph that spans ALL nodes in a weighted graph',
+       '💬 <b>Hook:</b> "Imagine connecting 5 cities with fiber optic cables — how do you minimize total cost?"',
+       '📌 Key term to introduce: <b>Greedy Algorithm</b> — locally optimal choices lead to a globally optimal result'],
+      // 2: Team
+      ['👥 Introduce each member: name, student ID, and their assigned section',
+       '📋 <b>M1</b>→Graph Basics | <b>M2</b>→MST Theory | <b>M3</b>→Kruskal\'s | <b>M4</b>→Prim\'s | <b>M5</b>→Comparison &amp; Conclusion',
+       '⏱️ Keep each intro under 30 seconds — audience cares more about the content than names'],
+      // 3: Graph Recap
+      ['📖 Define formally: G = (V, E). Point to the SVG diagram — nodes U, V, W with edge weights 5, 8, 2',
+       '🔑 ALL three properties are required for MST context: <b>Connected</b> + <b>Undirected</b> + <b>Weighted</b>',
+       '💡 Weight function w : E → ℝ assigns a numerical cost (distance, price, time) to every edge'],
+      // 4: Spanning Tree
+      ['📐 Key formula: A spanning tree of V vertices always has exactly <b>V – 1 edges</b> — no more, no fewer',
+       '🔑 Three conditions must hold: Subgraph + Contains ALL vertices + Acyclic (zero cycles)',
+       '💡 Point to both SVG examples — same 3-node graph, two different but equally valid spanning trees'],
+      // 5: MST Core Goal
+      ['📊 Read the formula aloud: "Minimize Cost(T) = Σ weight(e) for all edges e in spanning tree T"',
+       '🔑 Uniqueness (Card 03): if <b>all edge weights are distinct</b>, there is exactly ONE MST in the graph',
+       '💬 Ask audience: "Can there be multiple valid MSTs?" → Yes, only when two or more edges share equal weights'],
+      // 6: Analogy
+      ['🏢 Map to graph terms: Offices → Vertices | Fiber cables → Edges | Installation cost → Edge Weight',
+       '🔑 MST = optimal cabling layout — <b>all offices connected</b> at absolute minimum total cable cost',
+       '💡 Point to the dashed O4–O5 edge: the redundant cable the MST deliberately avoids (would create a cycle)'],
+      // 7: Two Fundamental Properties
+      ['📐 <b>Cut Property:</b> The min-weight edge crossing ANY vertex partition MUST be in the MST',
+       '🔄 <b>Cycle Property:</b> The max-weight edge in ANY cycle in the graph CANNOT be in the MST',
+       '💡 Both proven by contradiction — Prim\'s relies on Cut Property, Kruskal\'s relies on Cycle Property'],
+      // 8: Kruskal's Concept
+      ['📋 3 steps: ① Sort all edges by weight ② Pick cheapest edge ③ Skip if it creates a cycle (DSU check)',
+       '🔑 Greedy insight: always take the globally cheapest <b>safe</b> edge — no backtracking ever needed',
+       '💬 Preview: "MAKE-SET, FIND-SET, UNION are the three DSU operations that enable efficient cycle detection"'],
+      // 9: Kruskal Simulation
+      ['🖥️ Click "Next Step" and narrate each edge decision live. Explain colors to the audience',
+       '🟡 Gold = currently evaluating | ✅ Green solid = added to MST | ❌ Red dashed = rejected (creates cycle)',
+       '📌 Expected MST: B–C:1 ✅ → A–C:2 ✅ → D–E:2 ✅ → E–F:3 ✅ → A–B:4 ❌ → B–D:5 ✅ = <b>Weight 13</b>'],
+      // 10: DSU & Complexity
+      ['⚡ <b>FIND-SET(u):</b> Returns u\'s component root — if FIND(u) = FIND(v), edge u–v creates a cycle',
+       '⚡ <b>UNION(u,v):</b> Merges the two components — called only when an edge is accepted into the MST',
+       '🚀 Path compression + union by rank → O(α(V)) ≈ near-constant. Sorting dominates overall: <b>O(E log E)</b>'],
+      // 11: Prim's Concept
+      ['📋 4 steps: ① Pick start vertex r ② Find cheapest edge to unvisited node ③ Add it ④ Repeat until done',
+       '🔑 Key difference: Prim\'s always grows <b>one single connected tree</b> from a seed vertex outward',
+       '💬 Explain: u.key = cheapest edge connecting u to current MST | u.π = parent pointer in MST tree'],
+      // 12: Prim Simulation
+      ['🖥️ Click "Next Step" — simulation starts from Node A. Narrate the frontier expansion live',
+       '🟢 Green nodes = in MST | Pink/red edges = active frontier (candidates crossing the current cut)',
+       '📌 Same graph as Kruskal\'s → same final MST weight = 13. Both algorithms guarantee the optimal result'],
+      // 13: Priority Queue & Complexity
+      ['⚡ <b>EXTRACT-MIN:</b> Removes vertex with smallest key from Q — O(log V) with a binary min-heap',
+       '⚡ <b>DECREASE-KEY:</b> Updates v.key when cheaper edge found — O(log V) binary, O(1) with Fibonacci heap',
+       '🚀 <b>Fibonacci Heap:</b> DECREASE-KEY O(1) amortized → total Prim\'s complexity <b>O(E + V log V)</b>'],
+      // 14: Comparison
+      ['📊 <b>Sparse graph</b> (E ≈ V, few edges): Kruskal\'s wins — fewer edges to sort → O(V log V)',
+       '📊 <b>Dense graph</b> (E ≈ V², many edges): Prim\'s with adjacency matrix is O(V²) — more efficient',
+       '💡 <b>Critical point:</b> Both algorithms ALWAYS produce the true global minimum — only efficiency differs'],
+      // 15: Applications
+      ['🌐 <b>Network Design:</b> Real engineers use MST for electricity grids, fiber optic, and water pipelines',
+       '🤖 <b>ML Clustering:</b> Single-Linkage Agglomerative Clustering is mathematically equivalent to MST',
+       '🧮 <b>TSP Approx:</b> Christofides\' algorithm uses MST as a lower bound → guarantees within 1.5× of optimal'],
+      // 16: Conclusion
+      ['✅ <b>3 Takeaways:</b> ① MST = min weight spanning | ② Greedy paradigm | ③ Kruskal (sparse) vs Prim (dense)',
+       '💬 Invite questions: "When would you choose Kruskal\'s over Prim\'s? What graph property determines it?"',
+       '🎯 Strong closer: "Two completely different strategies — the same provably optimal answer every single time"'],
+    ];
+
+    let notesVisible = false;
+    const presNotes   = document.getElementById('presNotes');
+    const pnList      = document.getElementById('pnList');
+    const pnSlideInfo = document.getElementById('pnSlideInfo');
+
+    function showNotes() {
+      pnList.innerHTML = '';
+      (NOTES[cur] || []).forEach(function(n) {
+        const li = document.createElement('li');
+        li.innerHTML = n;
+        pnList.appendChild(li);
+      });
+      pnSlideInfo.textContent = 'Slide ' + (cur + 1) + ' of ' + N;
+    }
+
+    function toggleNotes() {
+      notesVisible = !notesVisible;
+      presNotes.classList.toggle('pres-notes--hidden', !notesVisible);
+      if (notesVisible) showNotes();
+    }
+
+    document.getElementById('pnClose').addEventListener('click', toggleNotes);
+    document.getElementById('btnNotes').addEventListener('click', toggleNotes);
+
+    document.addEventListener('keydown', function(ev) {
+      if (ev.key === 'n' || ev.key === 'N') { ev.preventDefault(); toggleNotes(); }
+    });
+
+    // Refresh notes content on every slide change when panel is open
+    const _baseHUD = updateHUD;
+    updateHUD = function() {
+      _baseHUD();
+      if (notesVisible) showNotes();
+    };
+  </script>
+
+  <!-- PRESENTER NOTES PANEL — Toggle with 'N' key or the 📝 button -->
+  <div id="presNotes" class="pres-notes pres-notes--hidden">
+    <div class="pn-header">
+      <span class="pn-icon">📝</span>
+      <span class="pn-label">Presenter Notes</span>
+      <span class="pn-slide-info" id="pnSlideInfo">Slide 1 of 16</span>
+      <button class="pn-close" id="pnClose" title="Close (N)">✕</button>
+    </div>
+    <ul id="pnList" class="pn-list"></ul>
+    <div class="pn-footer"><kbd>N</kbd>&ensp;toggle notes</div>
+  </div>
+
+</body>
+</html>
