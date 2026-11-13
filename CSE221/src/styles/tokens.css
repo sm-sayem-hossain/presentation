@@ -1,0 +1,24 @@
+:root {
+  --stage-w: 1600px;
+  --stage-h: 900px;
+
+  --bg: #f4efeb;
+  --bg-soft: #ece4df;
+  --surface: #fffdfb;
+
+  --ink: #171214;
+  --muted: rgba(23, 18, 20, 0.56);
+  --dim: rgba(23, 18, 20, 0.34);
+
+  --line: rgba(23, 18, 20, 0.13);
+  --line-strong: rgba(23, 18, 20, 0.24);
+
+  --accent: #e2574c;
+  --accent-soft: rgba(226, 87, 76, 0.12);
+
+  --display: 'Inter Tight Variable', 'Inter', system-ui, sans-serif;
+  --sans: 'Inter Tight Variable', 'Inter', system-ui, sans-serif;
+  --mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}

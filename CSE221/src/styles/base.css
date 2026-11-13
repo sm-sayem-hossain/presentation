@@ -1,0 +1,94 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ---------------- stage ---------------- */
+
+.stage-wrap {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.stage {
+  position: relative;
+  width: var(--stage-w);
+  height: var(--stage-h);
+  flex: none;
+  overflow: hidden;
+  background: var(--bg);
+  transform-origin: center center;
+  isolation: isolate;
+}
+
+.slide-frame {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  will-change: transform, opacity;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* ---------------- shared ---------------- */
+
+.label {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.rule {
+  height: 1px;
+  width: 56px;
+  background: var(--accent);
+}
+
+.accent {
+  color: var(--accent);
+}

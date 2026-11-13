@@ -1,0 +1,250 @@
+/* ---------------- HUD (quiet by default) ---------------- */
+
+.hud {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.hud__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--line);
+}
+
+.hud__progress i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.8s var(--ease);
+}
+
+.hud__bar {
+  position: absolute;
+  left: 64px;
+  right: 64px;
+  bottom: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.hud__bar.is-visible {
+  opacity: 0.72;
+}
+
+.hud__bar.is-visible:hover {
+  opacity: 1;
+}
+
+.hud__info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hud__info b {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.hud__controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.timer {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  transition: color 0.4s ease;
+}
+
+.timer--warn {
+  color: #b4761f;
+}
+
+.timer--over {
+  color: var(--accent);
+}
+
+.btn {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.btn:hover {
+  color: var(--ink);
+}
+
+.btn--on {
+  color: var(--accent);
+}
+
+/* ---------------- presenter notes ---------------- */
+
+.notes {
+  position: absolute;
+  top: 56px;
+  right: 56px;
+  bottom: 64px;
+  width: 400px;
+  z-index: 35;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 24px 18px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  box-shadow: 0 24px 60px rgba(23, 18, 20, 0.12);
+}
+
+.notes__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.notes__label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.notes__close {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.notes__title {
+  margin: 18px 0 0;
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.notes__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.notes__meta i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.notes__list {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.notes__list li {
+  display: flex;
+  gap: 12px;
+  font-size: 12.5px;
+  line-height: 1.62;
+  color: var(--muted);
+}
+
+.notes__list li::before {
+  content: '';
+  flex: none;
+  width: 4px;
+  height: 4px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.notes__foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+/* ---------------- print ---------------- */
+
+.print-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+}
+
+.print-page {
+  position: relative;
+  width: var(--stage-w);
+  height: var(--stage-h);
+  flex: none;
+  overflow: hidden;
+  background: var(--bg);
+  break-after: page;
+  page-break-after: always;
+}
+
+@media print {
+  @page {
+    size: 1600px 900px;
+    margin: 0;
+  }
+
+  html,
+  body,
+  #root {
+    overflow: visible;
+    background: #fff;
+  }
+
+  .print-root {
+    display: block;
+  }
+}
